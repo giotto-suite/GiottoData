@@ -1,0 +1,95 @@
+# getSODBDataset
+
+getSODBDataset
+
+## Usage
+
+``` r
+getSODBDataset(
+  dataset_name = NULL,
+  experiment_name = "default",
+  env_name = "giotto_env"
+)
+```
+
+## Arguments
+
+- dataset_name:
+
+  name of dataset to pull from the SODB. Must exist within the SODB.
+
+- experiment_name:
+
+  name of one experiment associated with \`dataset_name\` By default,
+  the first experiment will be used.
+
+- env_name:
+
+  name of the conda environment within which pysodb is already
+  installed, or within which installation of pysodb will be prompted
+
+## Details
+
+Interface with the Spatial Omics DataBase (SODB) using the python
+extension, pysodb, from TenCent.
+
+This function will write an anndata h5ad file for a provided dataset
+name to the current working directory and will then convert the h5ad
+into a Giotto Object.
+
+Run
+
+    listSODBDatasetNames()
+
+to find names of SODB datasets. Run
+
+    listSODBDatasetExperimentNames()
+
+to find names of experiments associate with a provided dataset.
+
+This function will not run if pysodb is not installed in the active
+conda environment. It will prompt the user to install pysodb
+automatically if it is not detected.
+
+\*Note that manual installation is more stable.\* To install manually
+within the giotto environment, follow the steps below:
+
+1\. Run
+
+    checkGiottoEnvironment()
+
+in R to find the installation location of the Giotto conda environment.
+
+2\. Open a terminal.
+
+3\. Clone the source code and change into the pysodb directory.
+
+
+      git clone https://github.com/TencentAILabHealthcare/pysodb.git
+      cd pysodb
+
+4\. Activate the giotto environment.
+
+    conda activate your/path/to/giotto_env
+
+5\. Install pysodb as a dependency or third-party package with pip:
+
+    pip install .
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+
+sodb_dataset_names <- listSODBDatasetNames()
+desired_dataset <- sodb_dataset_names[[15]] # Arbitrary
+
+dataset_experiment_names <- listSODBDatasetExperimentNames(dataset_name = desired_dataset)
+desired_experiment <- dataset_experiment_names[[1]] # Arbitrary
+
+gobject <- getSODBDataset(
+    dataset_name = desired_dataset,
+    experiment_name = desired_experiment
+)
+} # }
+```

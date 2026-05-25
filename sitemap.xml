@@ -1,48 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://drieslab.github.io/GiottoData/404.html</loc>
-  </url>
-  <url>
-    <loc>https://drieslab.github.io/GiottoData/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://drieslab.github.io/GiottoData/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://drieslab.github.io/GiottoData/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://drieslab.github.io/GiottoData/index.html</loc>
-  </url>
-  <url>
-    <loc>https://drieslab.github.io/GiottoData/reference/gDataDir.html</loc>
-  </url>
-  <url>
-    <loc>https://drieslab.github.io/GiottoData/reference/getSODBDataset.html</loc>
-  </url>
-  <url>
-    <loc>https://drieslab.github.io/GiottoData/reference/getSpatialDataset.html</loc>
-  </url>
-  <url>
-    <loc>https://drieslab.github.io/GiottoData/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://drieslab.github.io/GiottoData/reference/listSODBDatasetExperimentNames.html</loc>
-  </url>
-  <url>
-    <loc>https://drieslab.github.io/GiottoData/reference/listSODBDatasetNames.html</loc>
-  </url>
-  <url>
-    <loc>https://drieslab.github.io/GiottoData/reference/listSubObjectMini.html</loc>
-  </url>
-  <url>
-    <loc>https://drieslab.github.io/GiottoData/reference/list_subobject_mini.html</loc>
-  </url>
-  <url>
-    <loc>https://drieslab.github.io/GiottoData/reference/loadGiottoMini.html</loc>
-  </url>
-  <url>
-    <loc>https://drieslab.github.io/GiottoData/reference/loadSubObjectMini.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://giotto-suite.github.io/GiottoData/404.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/LICENSE-text.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/LICENSE.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/authors.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/index.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/news/index.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/reference/generate_mini_subobjects.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/reference/getSODBDataset.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/reference/getSpatialDataset.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/reference/giottodata_paths.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/reference/index.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/reference/listSODBDatasetExperimentNames.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/reference/listSODBDatasetNames.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/reference/listSubObjectMini.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/reference/list_subobject_mini.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/reference/loadGiottoMini.html</loc></url>
+<url><loc>https://giotto-suite.github.io/GiottoData/reference/loadSubObjectMini.html</loc></url>
 </urlset>
+
