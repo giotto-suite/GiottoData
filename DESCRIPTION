@@ -16,8 +16,8 @@ Description: Stores information and scripts to work with, or load various
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-URL: https://drieslab.github.io/GiottoData/, https://github.com/drieslab/GiottoData
-BugReports: https://github.com/drieslab/GiottoData/issues
+URL: https://giotto-suite.github.io/GiottoData/, https://github.com/giotto-suite/GiottoData
+BugReports: https://github.com/giotto-suite/GiottoData/issues
 Depends:
     R (>= 4.3.0),
     GiottoClass (>= 0.3.1),
@@ -33,7 +33,7 @@ Suggests:
     reticulate,
     terra (>= 1.5-12)
 Remotes:
-    drieslab/GiottoClass,
-    drieslab/GiottoUtils,
-    drieslab/Giotto
-RoxygenNote: 7.3.2
+    giotto-suite/GiottoClass,
+    giotto-suite/GiottoUtils,
+    giotto-suite/Giotto
+Config/roxygen2/version: 8.0.0
