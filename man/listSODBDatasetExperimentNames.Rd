@@ -7,7 +7,7 @@
 listSODBDatasetExperimentNames(dataset_name = NULL, env_name = "giotto_env")
 }
 \arguments{
-\item{dataset_name}{name of dataset for which experiment names will be listed. 
+\item{dataset_name}{name of dataset for which experiment names will be listed.
 Must exist within the SODB.}
 
 \item{env_name}{Python environment within which pysodb is installed.
@@ -20,7 +20,7 @@ listSODBDatasetExperimentNames
 }
 \details{
 Returns a vector containing the names of experiments associated with
-the provided `dataset_name`. 
+the provided `dataset_name`.
 
 Run \preformatted{listSODBDatasetNames()} to find names of SODB datasets.
 }

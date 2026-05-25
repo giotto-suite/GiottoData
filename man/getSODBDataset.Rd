@@ -11,7 +11,7 @@ getSODBDataset(
 )
 }
 \arguments{
-\item{dataset_name}{name of dataset to pull from the SODB. 
+\item{dataset_name}{name of dataset to pull from the SODB.
 Must exist within the SODB.}
 
 \item{experiment_name}{name of one experiment associated with `dataset_name`
@@ -36,14 +36,14 @@ Run \preformatted{listSODBDatasetNames()} to find names of SODB datasets.
 Run \preformatted{listSODBDatasetExperimentNames()} to find names of
 experiments associate with a provided dataset.
 
-This function will not run if pysodb is not installed in 
+This function will not run if pysodb is not installed in
 the active conda environment. It will prompt the user to install
 pysodb automatically if it is not detected.
 
 *Note that manual installation is more stable.*
-To install manually within the giotto environment, follow the steps below: 
+To install manually within the giotto environment, follow the steps below:
 
-1. Run \preformatted{checkGiottoEnvironment()} in R to find 
+1. Run \preformatted{checkGiottoEnvironment()} in R to find
 the installation location of the Giotto conda environment.
 
 2. Open a terminal.
@@ -66,12 +66,15 @@ the installation location of the Giotto conda environment.
 \examples{
 \dontrun{
 
-sodb_dataset_names = listSODBDatasetNames()
-desired_dataset = sodb_dataset_names[[15]] # Arbitrary
+sodb_dataset_names <- listSODBDatasetNames()
+desired_dataset <- sodb_dataset_names[[15]] # Arbitrary
 
-dataset_experiment_names = listSODBDatasetExperimentNames(dataset_name = desired_dataset)
-desired_experiment = dataset_experiment_names[[1]] # Arbitrary
+dataset_experiment_names <- listSODBDatasetExperimentNames(dataset_name = desired_dataset)
+desired_experiment <- dataset_experiment_names[[1]] # Arbitrary
 
-gobject = getSODBDataset(dataset_name = desired_dataset,
-                         experiment_name = desired_experiment)}
+gobject <- getSODBDataset(
+    dataset_name = desired_dataset,
+    experiment_name = desired_experiment
+)
+}
 }

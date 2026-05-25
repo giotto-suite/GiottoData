@@ -108,13 +108,7 @@ for(fov_i in 1:length(id_set)) {
                                      name = 'composite')
 
   fovsubset = addGiottoImage(gobject = fovsubset,
-                             largeImages = list(composite))
-
-
-  fovsubset = convertGiottoLargeImageToMG(giottoLargeImage = composite,
-                                          #mg_name = 'composite',
-                                          gobject = fovsubset,
-                                          return_gobject = TRUE)
+                             images = list(composite))
 
   gobjects_list[[fov_i]] = fovsubset
 
@@ -150,7 +144,7 @@ rna_ids = fov_join@feat_ID$rna[1:75]
 
 spatInSituPlotPoints(fov_join,
                      show_image = TRUE,
-                     largeImage_name = image_names,
+                     image_name = image_names,
                      feats = list('rna' = c(rna_ids)),
                      show_legend = F,
                      spat_unit = 'cell',
@@ -166,7 +160,7 @@ showGiottoImageNames(fov_join)
 
 spatPlot2D(gobject = fov_join,
            show_image = TRUE,
-           largeImage_name = c('fov002-composite', 'fov003-composite'),
+           image_name = c('fov002-composite', 'fov003-composite'),
            point_shape = 'no_border',
            point_size = 2.5,
            point_alpha = 0.5,
@@ -197,7 +191,7 @@ filterDistributions(fov_join,
                     detection = 'cells',
                     method = 'sum',
                     feat_type = 'rna',
-                    nr_bins = 100)
+                    nr_bins = 30)
 
 filterDistributions(fov_join,
                     plot_type = 'hist',
@@ -298,11 +292,17 @@ fov_join@spatial_info$cell@spatVector[['cell_area']] = cell_area
 perimeter = terra::perim(fov_join@spatial_info$cell@spatVector)
 fov_join@spatial_info$cell@spatVector[['perimeter']] = perimeter
 
-spatvecDT = spatVector_to_dt(fov_join@spatial_info$cell@spatVector)
+spatvecDT <- getPolygonInfo(
+    fov_join, polygon_name = "cell", return_giottoPolygon = TRUE
+) %>% data.table::as.data.table(geom = "XY")
+
+
 
 spatvecDT = unique(spatvecDT[,.(poly_ID, cell_area, perimeter)])
 
-cell_meta = merge.data.table(cell_meta, spatvecDT, by.x = 'cell_ID', by.y = 'poly_ID')
+cell_meta = data.table::merge.data.table(
+    cell_meta, spatvecDT, by.x = 'cell_ID', by.y = 'poly_ID'
+)
 
 plot(cell_meta$cell_area, cell_meta$perimeter)
 
@@ -317,10 +317,13 @@ plot(cell_meta$nr_feats, cell_meta$area)
 
 # 6. visualize transcripts ####
 # --------------------------- #
-segmDT = spatVector_to_dt(fov_join@spatial_info$cell@spatVector)
+segmDT <- getPolygonInfo(
+    fov_join, polygon_name = "cell", return_giottoPolygon = TRUE) %>%
+    data.table::as.data.table(geom = "XY")
 
-
-geomDT = spatVector_to_dt(fov_join@spatial_info$cell@overlaps$rna)
+geomDT <- getPolygonInfo(
+    fov_join, polygon_name = "cell", polygon_overlap = "rna") %>%
+    data.table::as.data.table(geom = "XY")
 geomDT[, inside := ifelse(is.na(poly_ID), 'N', 'Y')]
 geomDT[, cell_inside := ifelse(is.na(poly_ID), 'N', poly_ID)]
 
@@ -336,7 +339,7 @@ pl = pl + geom_point(data = geomDT, aes(x = x, y = y, color = cell_inside, size 
 pl = pl + scale_color_manual(values = color_code)
 pl = pl + scale_size_manual(values = c('N' = 0.7, 'Y' = 0.3))
 pl = pl + theme_minimal() + theme(panel.background = element_rect(fill="black"), panel.grid = element_blank())
-pl = pl + geom_polygon(data = segmDT, aes(x = x, y = y, group = poly_ID), color = 'white', size = 0.2)
+pl = pl + geom_polygon(data = segmDT, aes(x = x, y = y, group = poly_ID), color = 'white', linewidth = 0.2)
 pl
 
 
@@ -374,13 +377,13 @@ fov_join_reload = loadGiotto(path_to_folder = system.file('/Mini_datasets/CosMx/
 
 showGiottoImageNames(fov_join_reload)
 
-fov_join_reload@largeImages
+fov_join_reload@images
 
 rna_ids = fov_join_reload@feat_ID$rna[1:75]
 
 spatInSituPlotPoints(fov_join_reload,
                      show_image = TRUE,
-                     largeImage_name = image_names,
+                     image_name = image_names,
                      feats = list('rna' = c(rna_ids)),
                      show_legend = F,
                      spat_unit = 'cell',

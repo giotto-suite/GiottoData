@@ -1,1 +1,3 @@
 "poly_ID"
+"cell_area"
+"perimeter"

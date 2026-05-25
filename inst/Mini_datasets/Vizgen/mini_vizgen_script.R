@@ -258,6 +258,7 @@ vizsubc <- calculateHVF(gobject = vizsubc,
 # we will run pca on the pre-scaled matrix from the pearson residual normalization
 # if features are not specified it will automatically search for the hvf column in the feature metadata
 
+# warning: too large a percentage of total singlular values
 vizsubc <- runPCA(gobject = vizsubc,
                   spat_unit = 'aggregate',
                   expression_values = 'pearson',

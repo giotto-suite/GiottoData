@@ -11,12 +11,12 @@ listSODBDatasetNames(
 )
 }
 \arguments{
+\item{category}{name of category for which dataset names will be listed.}
+
 \item{env_name}{Python environment within which pysodb is installed.
 If it is not already installed, the user
 will be prompted to install `pysodb`
 DEFAULT: "giotto_env"}
-
-\item{cateogry}{name of category for which dataset names will be listed.}
 }
 \description{
 listSODBDatasetNames
