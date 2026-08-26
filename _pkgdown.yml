@@ -22,11 +22,14 @@ navbar:
     left:
     - intro
     - reference
-    right: github
+    right: [suite, github]
   components:
     reference:
       text: Documentation
       href: reference/index.html
+    suite:
+      text: Suite
+      href: https://giottosuite.com
     github:
       icon: fab fa-github fa-lg
       href: https://github.com/giotto-suite/GiottoData/
