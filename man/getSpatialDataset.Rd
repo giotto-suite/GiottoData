@@ -34,10 +34,13 @@ all of [listSpatialDatasetCategories()]. Categories a dataset has no data
 for are skipped.}
 
 \item{extract}{logical or NULL. Whether to expand downloaded `.zip`/`.tar*`
-archives in place after downloading. `NULL` (default) follows the manifest,
-which sets this per dataset. `TRUE`/`FALSE` overrides it. Archives are kept
-alongside what they expand to, and extraction is skipped when the contents
-are already present.}
+archives after downloading. `NULL` (default) follows the manifest, which sets
+this per dataset. `TRUE`/`FALSE` overrides it. Contents are placed at the
+root of the dataset directory, stripping a single wrapping folder if the
+archive has one, so the returned path is directly usable. The archive itself
+is removed once expanded, since it is redundant with its contents; pass
+`extract = FALSE` to keep the archive instead. Re-running skips archives
+whose contents are already present.}
 
 \item{timeout}{numeric or NULL. Seconds before a download is abandoned.
 `NULL` (default) raises R's 60 second default to 3600 for the duration of

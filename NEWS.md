@@ -1,3 +1,10 @@
+# GiottoData 0.3.1
+
+## Enhancements
+- `getSpatialDataset()` now expands archives at the root of the dataset directory, stripping a single wrapping folder if the archive has one, so the returned path is directly the vendor directory and callers never need to know the archive's internal shape
+- Extraction drops macOS packaging noise (`__MACOSX/`, `.DS_Store`, `._*`), so a dataset mirroring a vendor's output layout does not carry resource forks
+- The archive is removed once expanded, since it is redundant with its contents. `extract = FALSE` keeps the archive and skips expansion. A hidden `.gdata_extracted.json` records what each archive expanded to, so a dropped archive is not re-downloaded on the next call
+
 # GiottoData 0.3.0
 
 ## Breaking changes
