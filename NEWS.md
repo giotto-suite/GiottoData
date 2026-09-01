@@ -2,7 +2,6 @@
 
 ## Breaking changes
 - `getSpatialDataset()` now defaults `directory` to a persistent per-user cache (`tools::R_user_dir("GiottoData", "cache")`) instead of `getwd()`, and writes into a `dataset`-named subdirectory of it
-- `getSpatialDataset()` no longer accepts `mini_seqFISH`, which had no entry in the dataset manifest and always errored. Use `loadGiottoMini("seqfish")`
 
 ## New
 - `xenium_mini_lung`: 10X Xenium Human Lung Cancer FFPE subset with multimodal segmentation, from [Zenodo 13207308](https://doi.org/10.5281/zenodo.13207308). Ships as an archive and is extracted on download
@@ -21,6 +20,7 @@
 
 ## Bug fixes
 - `getSpatialDataset()` raises R's 60 second download timeout to 3600 for the duration of a download, configurable with the new `timeout` param. Datasets over roughly 100 MB previously failed partway through on an ordinary connection. Note that `timeout` cannot be passed via `...`, as `download.file()` silently ignores it
+- Restore `mini_seqFISH`, which was dropped from the dataset table in 525c51e while its name stayed in `getSpatialDataset()`'s accepted values, so it errored with `argument is of length zero`. Its source files were never removed
 - Fix `sg_mini_kidney` manifest entry: the row had 3 of 5 fields so it was silently dropped when parsing, and its url 404'd
 
 # GiottoData 0.2.16 (2024/11/19)

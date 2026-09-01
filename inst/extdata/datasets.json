@@ -45,6 +45,13 @@
             "metadata": ["https://raw.githubusercontent.com/drieslab/spatial-datasets/master/data/2018_merFISH_science_hypo_preoptic/cell_locations/merFISH_3D_metadata.txt"]
         }
     },
+    "mini_seqFISH": {
+        "files": {
+            "spatial_locs": ["https://raw.githubusercontent.com/drieslab/spatial-datasets/master/data/2022_miniseqFISH/seqfish_field_locs.txt"],
+            "expr_matrix": ["https://raw.githubusercontent.com/drieslab/spatial-datasets/master/data/2022_miniseqFISH/seqfish_field_expr.txt.gz"],
+            "metadata": ["https://raw.githubusercontent.com/drieslab/spatial-datasets/master/data/2022_miniseqFISH/mouse_ligand_receptors.txt"]
+        }
+    },
     "seqfish_SS_cortex": {
         "files": {
             "spatial_locs": ["https://raw.githubusercontent.com/drieslab/spatial-datasets/master/data/2019_seqfish_plus_SScortex/cell_locations/cortex_svz_centroids_coord.txt"],

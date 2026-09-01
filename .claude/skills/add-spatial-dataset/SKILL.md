@@ -131,8 +131,9 @@ read the error rather than working around it:
   `extract` hoping to gunzip them.
 - **Do not add a dataset name anywhere but the manifest.** `getSpatialDataset()`
   and `listSpatialDatasetNames()` both derive from it. There is no second list
-  to keep in sync, and adding one would reintroduce the drift bug that made
-  `mini_seqFISH` unusable.
+  to keep in sync. When there was one, `mini_seqFISH` was dropped from the table
+  while its name stayed in the function's accepted values, and the dataset was
+  silently unreachable for years even though its files were still online.
 - **Urls point at mutable branches.** Most current entries use `/master/`, so
   the bytes can change under a fixed url. Prefer a commit SHA in place of the
   branch for anything new. Files over ~50 MB should go to a GitHub Release or
