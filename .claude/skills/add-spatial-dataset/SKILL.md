@@ -33,7 +33,11 @@ when parsed.
   `listSpatialDatasetCategories()`. `bundle` is the convention for a
   whole-dataset archive that does not decompose into the other categories.
 - `extract` — optional. `true` means expand downloaded `.zip`/`.tar*` archives
-  after download. Omit it otherwise.
+  after download. Omit it otherwise. Extraction places contents at the root of
+  the dataset directory (a single wrapping folder inside the archive is
+  stripped automatically) and deletes the archive afterwards, so the path
+  `getSpatialDataset()` returns is directly the vendor directory. You do not
+  need to repackage an archive to achieve this.
 
 ## Procedure
 

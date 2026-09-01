@@ -10,6 +10,7 @@
                          dryrun = FALSE,
                          verbose = TRUE,
                          force = FALSE,
+                         skip = character(),
                          ...) {
   urls <- unlist(strsplit(urls, split = '\\|'))
   if (dryrun) {
@@ -31,6 +32,11 @@
   for (url in urls) {
     myfilename <- basename(url)
     mydestfile <- file.path(dest_dir, myfilename)
+
+    if (myfilename %in% skip && !force) {
+      if (verbose) wrap_msg("already extracted, skipping download: ", myfilename)
+      next
+    }
 
     if (file.exists(mydestfile) && !force) {
       if (verbose) wrap_msg("cached, skipping download: ", myfilename)
@@ -199,30 +205,124 @@
 }
 
 
-# Expand any archives among `files` into `dest_dir`. Skipped when every entry
-# the archive holds is already on disk, so this is as re-runnable as the
-# download step it follows.
+# Archive members that are packaging noise rather than data. Dropped on
+# extraction so a fixture that mirrors a vendor's output directory does not
+# also carry macOS resource forks.
+.gdata_archive_junk <- function(entries) {
+    grepl("^__MACOSX/|(^|/)[.]DS_Store$|(^|/)[.]_", entries)
+}
+
+
+# Name of the single directory every real entry sits inside, or NA when the
+# archive already unpacks flat. Archives are commonly wrapped in one folder
+# (`Raw/...`), which would otherwise leave the vendor layout one level below
+# the path `getSpatialDataset()` returns.
+.gdata_archive_root <- function(entries) {
+    e <- entries[!.gdata_archive_junk(entries)]
+    e <- e[nzchar(e)]
+    if (length(e) == 0L) return(NA_character_)
+
+    root <- unique(sub("/.*$", "", e))
+    if (length(root) != 1L) return(NA_character_)
+    # every entry must be the wrapper itself or live under it, and something
+    # must actually be inside
+    inside <- e[e != root & e != paste0(root, "/")]
+    if (length(inside) == 0L) return(NA_character_)
+    if (!all(startsWith(inside, paste0(root, "/")))) return(NA_character_)
+    root
+}
+
+
+# Record of what each archive expanded to. Written because extraction deletes
+# the archive: without it there is no way to tell "already extracted" from
+# "never downloaded", and the download step would fetch it again every call.
+.gdata_stamp_path <- function(dest_dir) {
+    file.path(dest_dir, ".gdata_extracted.json")
+}
+
+.gdata_stamp_read <- function(dest_dir) {
+    p <- .gdata_stamp_path(dest_dir)
+    if (!file.exists(p)) return(list())
+    jsonlite::fromJSON(p, simplifyVector = TRUE)
+}
+
+.gdata_stamp_write <- function(dest_dir, stamp) {
+    writeLines(
+        jsonlite::toJSON(stamp, pretty = 4, auto_unbox = FALSE),
+        .gdata_stamp_path(dest_dir)
+    )
+}
+
+
+# Archives whose recorded contents are all still on disk. These need neither
+# re-downloading nor re-extracting.
+.gdata_extracted_ok <- function(dest_dir) {
+    stamp <- .gdata_stamp_read(dest_dir)
+    if (length(stamp) == 0L) return(character())
+    ok <- vapply(names(stamp), function(a) {
+        e <- stamp[[a]]
+        length(e) > 0L && all(file.exists(file.path(dest_dir, e)))
+    }, logical(1))
+    names(stamp)[ok]
+}
+
+
+# Expand any archives among `files` at the root of `dest_dir`, so the returned
+# dataset path is directly the vendor directory. The archive is removed once it
+# has expanded: it is redundant with its own contents, and `extract = FALSE`
+# is how a caller asks to keep it instead.
 .gdata_extract <- function(files, dest_dir, verbose = TRUE, force = FALSE) {
+    stamp <- .gdata_stamp_read(dest_dir)
+
     for (f in files) {
         type <- .gdata_archive_type(f)
         if (is.na(type)) next
+        aname <- basename(f)
 
-        contents <- switch(type,
-            zip = utils::unzip(f, list = TRUE)[['Name']],
-            tar = utils::untar(f, list = TRUE)
-        )
-
-        if (!force && length(contents) > 0L &&
-            all(file.exists(file.path(dest_dir, contents)))) {
-            if (verbose) wrap_msg("already extracted, skipping: ", basename(f))
+        if (!force && aname %in% .gdata_extracted_ok(dest_dir)) {
+            if (verbose) wrap_msg("already extracted, skipping: ", aname)
             next
         }
+        if (!file.exists(f)) next
 
-        if (verbose) wrap_msg("Extracting ", basename(f), " (", length(contents), " entries)")
-        switch(type,
-            zip = utils::unzip(f, exdir = dest_dir),
-            tar = utils::untar(f, exdir = dest_dir)
+        listing <- switch(type,
+            zip = utils::unzip(f, list = TRUE)[["Name"]],
+            tar = utils::untar(f, list = TRUE)
         )
+        wanted <- listing[!.gdata_archive_junk(listing)]
+        root <- .gdata_archive_root(listing)
+
+        if (verbose) {
+            wrap_msg("Extracting ", aname, " (", length(wanted), " entries",
+                     if (!is.na(root)) paste0(", stripping '", root, "/'") else "",
+                     ")")
+        }
+
+        switch(type,
+            zip = utils::unzip(f, files = wanted, exdir = dest_dir),
+            tar = utils::untar(f, files = wanted, exdir = dest_dir)
+        )
+
+        # lift the wrapper's contents up a level, then drop the empty wrapper.
+        # A rename within dest_dir stays on one filesystem, so this does not
+        # copy the payload.
+        if (!is.na(root)) {
+            rdir <- file.path(dest_dir, root)
+            for (item in list.files(rdir, all.files = TRUE, no.. = TRUE)) {
+                file.rename(file.path(rdir, item), file.path(dest_dir, item))
+            }
+            unlink(rdir, recursive = TRUE)
+            wanted <- sub(paste0("^", root, "/"), "", wanted)
+            wanted <- wanted[nzchar(wanted)]
+        }
+
+        # keep only paths that actually landed, so the stamp is a truthful
+        # record to test against later
+        wanted <- wanted[file.exists(file.path(dest_dir, wanted))]
+        stamp[[aname]] <- wanted
+        .gdata_stamp_write(dest_dir, stamp)
+
+        unlink(f)
     }
 }
 
@@ -268,10 +368,13 @@ listSpatialDatasetCategories <- function() {
 #' all of [listSpatialDatasetCategories()]. Categories a dataset has no data
 #' for are skipped.
 #' @param extract logical or NULL. Whether to expand downloaded `.zip`/`.tar*`
-#' archives in place after downloading. `NULL` (default) follows the manifest,
-#' which sets this per dataset. `TRUE`/`FALSE` overrides it. Archives are kept
-#' alongside what they expand to, and extraction is skipped when the contents
-#' are already present.
+#' archives after downloading. `NULL` (default) follows the manifest, which sets
+#' this per dataset. `TRUE`/`FALSE` overrides it. Contents are placed at the
+#' root of the dataset directory, stripping a single wrapping folder if the
+#' archive has one, so the returned path is directly usable. The archive itself
+#' is removed once expanded, since it is redundant with its contents; pass
+#' `extract = FALSE` to keep the archive instead. Re-running skips archives
+#' whose contents are already present.
 #' @param timeout numeric or NULL. Seconds before a download is abandoned.
 #' `NULL` (default) raises R's 60 second default to 3600 for the duration of
 #' the call, without lowering a larger existing `options(timeout =)`. A number
@@ -350,6 +453,10 @@ getSpatialDataset <- function(dataset = listSpatialDatasetNames(),
         }
     }
 
+    # archives already expanded here were deleted afterwards, so their absence
+    # is not a reason to download them again
+    already <- if (extract && !force) .gdata_extracted_ok(dest_dir) else character()
+
     GiottoUtils::gwith_options(list(timeout = timeout), {
         for (cat in fetch_cats) {
             vmsg(.v = verbose, "\n Download ", cat, ": \n")
@@ -357,6 +464,7 @@ getSpatialDataset <- function(dataset = listSpatialDatasetNames(),
                 dryrun = dryrun,
                 verbose = verbose,
                 force = force,
+                skip = already,
                 ...
             )
         }
