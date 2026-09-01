@@ -1,7 +1,7 @@
 Package: GiottoData
 Type: Package
 Title: Datasets for Giotto
-Version: 0.2.16
+Version: 0.3.0
 Authors@R: c(
 	person("Ruben", "Dries", email = "rubendries@gmail.com",
 		 role = c("aut", "cre"), comment = c(ORCID = "0000-0001-7650-7754")),
@@ -25,8 +25,12 @@ Depends:
 Imports:
     data.table (>= 1.14.0),
     GiottoUtils (>= 0.1.7),
-    rprojroot
+    jsonlite,
+    rprojroot,
+    tools
 Suggests:
+    testthat (>= 3.0.0),
+    withr,
     devtools,
     GiottoVisuals,
     Giotto,
@@ -37,3 +41,4 @@ Remotes:
     giotto-suite/GiottoUtils,
     giotto-suite/Giotto
 Config/roxygen2/version: 8.0.0
+Config/testthat/edition: 3
