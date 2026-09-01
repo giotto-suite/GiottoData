@@ -5,30 +5,59 @@
 \title{getSpatialDataset}
 \usage{
 getSpatialDataset(
-  dataset = c("ST_OB1", "ST_OB2", "codex_spleen", "cycif_PDAC", "starmap_3D_cortex",
-    "osmfish_SS_cortex", "merfish_preoptic", "mini_seqFISH", "seqfish_SS_cortex",
-    "seqfish_OB", "slideseq_cerebellum", "ST_SCC", "scRNA_prostate", "scRNA_mouse_brain",
-    "mol_cart_lung_873_C1", "sg_mini_kidney"),
-  directory = getwd(),
+  dataset = listSpatialDatasetNames(),
+  directory = tools::R_user_dir("GiottoData", "cache"),
   verbose = TRUE,
   dryrun = FALSE,
+  force = FALSE,
+  include = listSpatialDatasetCategories(),
+  extract = NULL,
+  timeout = NULL,
   ...
 )
 }
 \arguments{
-\item{dataset}{dataset to download}
+\item{dataset}{dataset to download. One of [listSpatialDatasetNames()]}
 
-\item{directory}{directory to save the data to}
+\item{directory}{directory to save the data to. Datasets are placed in a
+subdirectory named after `dataset`. Defaults to a persistent per-user cache
+location (see \code{\link[tools]{R_user_dir}}).}
 
 \item{verbose}{verbosity}
 
 \item{dryrun}{dryrun: does not download data but shows download commands}
 
+\item{force}{logical. Re-download files that are already present}
+
+\item{include}{character. Which categories of file to download. Defaults to
+all of [listSpatialDatasetCategories()]. Categories a dataset has no data
+for are skipped.}
+
+\item{extract}{logical or NULL. Whether to expand downloaded `.zip`/`.tar*`
+archives in place after downloading. `NULL` (default) follows the manifest,
+which sets this per dataset. `TRUE`/`FALSE` overrides it. Archives are kept
+alongside what they expand to, and extraction is skipped when the contents
+are already present.}
+
+\item{timeout}{numeric or NULL. Seconds before a download is abandoned.
+`NULL` (default) raises R's 60 second default to 3600 for the duration of
+the call, without lowering a larger existing `options(timeout =)`. A number
+is used as given. Note that this cannot be passed through `\dots`, since
+`download.file()` silently ignores an argument of this name.}
+
 \item{\dots}{additional parameters to \code{\link[utils]{download.file}}}
 }
+\value{
+character. Path to the directory the dataset files were written to,
+returned invisibly.
+}
 \description{
-This function will automatically download the spatial locations and
-expression matrix for the chosen dataset. These files are already in the right format
-to create a Giotto object. If wget is installed on your machine, you can add
-'method = wget' to the parameters to download files faster.
+This function will automatically download the spatial locations
+and expression matrix for the chosen dataset. These files are already in the
+right format to create a Giotto object. If wget is installed on your machine,
+you can add 'method = wget' to the parameters to download files faster.
+
+Downloads are cached: files already present in the target directory are not
+re-downloaded unless `force = TRUE`, so repeat calls for the same dataset
+return immediately.
 }

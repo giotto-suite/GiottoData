@@ -55,6 +55,13 @@ gdata_dataset_devdir <- function(...) {
     gdata_devdir("inst", "Mini_datasets", ...)
 }
 
+#' @describeIn giottodata_paths Get the development path to the extdata
+#' directory
+#' @keywords internal
+gdata_extdata_devdir <- function(...) {
+    gdata_devdir("inst", "extdata", ...)
+}
+
 # https://stackoverflow.com/questions/7963898/extracting-the-last-n-characters-from-a-string-in-r
 str_tail <- function(x, n) {
     substr(x, nchar(x) - n + 1, nchar(x))

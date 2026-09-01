@@ -8,6 +8,7 @@
 \alias{gdata_devdir}
 \alias{gdata_subobject_devdir}
 \alias{gdata_dataset_devdir}
+\alias{gdata_extdata_devdir}
 \title{Get GiottoData paths}
 \usage{
 gdata_libdir(...)
@@ -21,6 +22,8 @@ gdata_devdir(...)
 gdata_subobject_devdir(...)
 
 gdata_dataset_devdir(...)
+
+gdata_extdata_devdir(...)
 }
 \arguments{
 \item{\dots}{passed to `file.path()`}
@@ -48,6 +51,9 @@ subobjects directory
 
 \item \code{gdata_dataset_devdir()}: Get the development path to the mini
 datasets directory
+
+\item \code{gdata_extdata_devdir()}: Get the development path to the extdata
+directory
 
 }}
 \keyword{internal}
