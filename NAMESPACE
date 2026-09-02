@@ -3,6 +3,7 @@
 export(generate_mini_subobjects)
 export(getSODBDataset)
 export(getSpatialDataset)
+export(giottoDataCache)
 export(listSODBDatasetExperimentNames)
 export(listSODBDatasetNames)
 export(listSpatialDatasetCategories)

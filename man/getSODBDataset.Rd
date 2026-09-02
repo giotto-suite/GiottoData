@@ -7,7 +7,10 @@
 getSODBDataset(
   dataset_name = NULL,
   experiment_name = "default",
-  env_name = "giotto_env"
+  env_name = NULL,
+  directory = giottoDataCache(),
+  force = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -17,9 +20,16 @@ Must exist within the SODB.}
 \item{experiment_name}{name of one experiment associated with `dataset_name`
 By default, the first experiment will be used.}
 
-\item{env_name}{name of the conda environment within which
-pysodb is already installed, or within which installation
-of pysodb will be prompted}
+\item{env_name}{Calls [GiottoClass::set_giotto_python_path()]. Path to
+python binary to use or envname. Leaving as `NULL` will use the default.}
+
+\item{directory}{directory to cache the downloaded h5ad in. Defaults to
+[giottoDataCache()], under a `sodb` subdirectory, named after the dataset
+and experiment.}
+
+\item{force}{logical. Re-fetch the dataset even if it is already cached}
+
+\item{verbose}{verbosity}
 }
 \description{
 getSODBDataset
@@ -28,9 +38,11 @@ getSODBDataset
 Interface with the Spatial Omics DataBase (SODB) using the
 python extension, pysodb, from TenCent.
 
-This function will write an anndata h5ad file for a provided dataset
-name to the current working directory and will then  convert
-the h5ad into a Giotto Object.
+This function writes an anndata h5ad file for the requested dataset and
+experiment into `directory`, then converts it into a Giotto object. The
+h5ad is kept, so a later request for the same dataset and experiment
+converts the cached copy instead of fetching again. Pass `force = TRUE` to
+re-fetch.
 
 Run \preformatted{listSODBDatasetNames()} to find names of SODB datasets.
 Run \preformatted{listSODBDatasetExperimentNames()} to find names of
