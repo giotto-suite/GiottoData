@@ -12,8 +12,8 @@
 #'   `R_USER_CACHE_DIR` environment variable
 #' }
 #'
-#' The option is seeded as `NULL` on load, so the default is the standard
-#' per-user cache location until something sets it.
+#' The option is unset by default, so the standard per-user cache location is
+#' used until something sets it.
 #'
 #' Nothing is created by calling this: it computes a path.
 #' @param \dots optional path components appended with `file.path()`

@@ -7,7 +7,7 @@
 
 ## Enhancements
 - New exported `giottoDataCache()` returns the directory datasets are downloaded into, and is the default `directory` for `getSpatialDataset()` and `getSODBDataset()`. Gives a supported way to locate, inspect and clear the cache
-- The cache location is settable with `options(giottodata.cache = )`, or with `giottoDataCache(set = )`. Seeded as `NULL` on load, in which case the standard per-user location is used. An unusable option value falls back to the default rather than erroring
+- The cache location is settable with `options(giottodata.cache = )`, or with `giottoDataCache(set = )`. Unset by default, in which case the standard per-user location is used. An unusable option value falls back to the default rather than erroring
 - `getSODBDataset()` caches the fetched h5ad under `giottoDataCache("sodb")`, named after the dataset and experiment, and converts the cached copy on later calls. New `directory`, `force` and `verbose` params
 - SODB python dependency checks go through `GiottoUtils::package_check()` and now also cover `anndata` and `squidpy`, which these functions require but never verified
 - `env_name` defaults to `NULL` on all three SODB functions, using the configured giotto python path rather than a hardcoded `"giotto_env"`
