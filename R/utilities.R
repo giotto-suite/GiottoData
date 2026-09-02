@@ -5,24 +5,62 @@
 #' `directory` for [getSpatialDataset()] and [getSODBDataset()], both of which
 #' skip files already present there, so it accumulates across sessions.
 #'
-#' The location follows \code{\link[tools]{R_user_dir}} and can be relocated
-#' by setting the `R_USER_CACHE_DIR` environment variable, which is how a CI
-#' job would point it at a restorable cache.
+#' The location is resolved in this order:
+#' \enumerate{
+#'   \item `options(giottodata.cache = )`, when set to a path
+#'   \item \code{\link[tools]{R_user_dir}}, which itself honours the
+#'   `R_USER_CACHE_DIR` environment variable
+#' }
+#'
+#' The option is seeded as `NULL` on load, so the default is the standard
+#' per-user cache location until something sets it.
 #'
 #' Nothing is created by calling this: it computes a path.
 #' @param \dots optional path components appended with `file.path()`
-#' @returns character path
+#' @param set character path to use as the cache root, or `NULL` to clear the
+#' option and fall back to the default location. When given, the option is set
+#' and the new root returned invisibly; `\dots` is ignored.
+#' @returns character path. Invisibly when `set` is used.
 #' @examples
 #' giottoDataCache()
+#' giottoDataCache("merfish_preoptic")
+#'
+#' \dontrun{
+#' # point it somewhere with more room, for this session
+#' giottoDataCache(set = "~/scratch/giotto-data")
+#'
+#' # equivalent, and how to set it from an .Rprofile
+#' options(giottodata.cache = "~/scratch/giotto-data")
+#'
+#' # back to the default
+#' giottoDataCache(set = NULL)
 #'
 #' # inspect or clear what has accumulated
-#' \dontrun{
 #' list.files(giottoDataCache())
 #' unlink(giottoDataCache("merfish_preoptic"), recursive = TRUE)
 #' }
 #' @export
-giottoDataCache <- function(...) {
-    file.path(tools::R_user_dir("GiottoData", "cache"), ...)
+giottoDataCache <- function(..., set) {
+    if (!missing(set)) {
+        if (!is.null(set)) {
+            if (!is.character(set) || length(set) != 1L || is.na(set) ||
+                !nzchar(set)) {
+                stop("[giottoDataCache] `set` must be a single path, or NULL",
+                    call. = FALSE
+                )
+            }
+            set <- path.expand(set)
+        }
+        options(giottodata.cache = set)
+        return(invisible(giottoDataCache()))
+    }
+
+    root <- getOption("giottodata.cache")
+    if (is.null(root) || !is.character(root) || length(root) != 1L ||
+        is.na(root) || !nzchar(root)) {
+        root <- tools::R_user_dir("GiottoData", "cache")
+    }
+    file.path(root, ...)
 }
 
 

@@ -4,30 +4,50 @@
 \alias{giottoDataCache}
 \title{GiottoData cache directory}
 \usage{
-giottoDataCache(...)
+giottoDataCache(..., set)
 }
 \arguments{
 \item{\dots}{optional path components appended with `file.path()`}
+
+\item{set}{character path to use as the cache root, or `NULL` to clear the
+option and fall back to the default location. When given, the option is set
+and the new root returned invisibly; `\dots` is ignored.}
 }
 \value{
-character path
+character path. Invisibly when `set` is used.
 }
 \description{
 Path that \pkg{GiottoData} downloads datasets into. Used as the default
 `directory` for [getSpatialDataset()] and [getSODBDataset()], both of which
 skip files already present there, so it accumulates across sessions.
 
-The location follows \code{\link[tools]{R_user_dir}} and can be relocated
-by setting the `R_USER_CACHE_DIR` environment variable, which is how a CI
-job would point it at a restorable cache.
+The location is resolved in this order:
+\enumerate{
+  \item `options(giottodata.cache = )`, when set to a path
+  \item \code{\link[tools]{R_user_dir}}, which itself honours the
+  `R_USER_CACHE_DIR` environment variable
+}
+
+The option is seeded as `NULL` on load, so the default is the standard
+per-user cache location until something sets it.
 
 Nothing is created by calling this: it computes a path.
 }
 \examples{
 giottoDataCache()
+giottoDataCache("merfish_preoptic")
+
+\dontrun{
+# point it somewhere with more room, for this session
+giottoDataCache(set = "~/scratch/giotto-data")
+
+# equivalent, and how to set it from an .Rprofile
+options(giottodata.cache = "~/scratch/giotto-data")
+
+# back to the default
+giottoDataCache(set = NULL)
 
 # inspect or clear what has accumulated
-\dontrun{
 list.files(giottoDataCache())
 unlink(giottoDataCache("merfish_preoptic"), recursive = TRUE)
 }
