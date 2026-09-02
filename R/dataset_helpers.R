@@ -90,16 +90,31 @@
         if (!is.null(manifest[[ds]][['extract']])) {
             manifest[[ds]][['extract']] <- jsonlite::unbox(manifest[[ds]][['extract']])
         }
+        # each checksum is a single string, so unbox individually.
+        # `auto_unbox` stays FALSE globally to keep url categories as arrays
+        # even at length 1.
+        sums <- manifest[[ds]][['checksums']]
+        if (!is.null(sums)) {
+            manifest[[ds]][['checksums']] <- lapply(sums, function(x) {
+                jsonlite::unbox(as.character(x)[[1]])
+            })
+        }
         manifest[[ds]] <- manifest[[ds]][
-            intersect(c("files", "extract"), names(manifest[[ds]]))
+            intersect(c("files", "checksums", "extract"), names(manifest[[ds]]))
         ]
     }
 
     writeLines(jsonlite::toJSON(manifest, pretty = 4, auto_unbox = FALSE), path)
 
     back <- .gdata_manifest(path)
+    flat_sums <- function(m) lapply(m, function(x) {
+        s <- x[["checksums"]]
+        if (is.null(s)) NULL else vapply(s, function(v) as.character(v)[[1]],
+                                         character(1))
+    })
     ok <- identical(names(back), names(orig)) &&
         identical(lapply(back, `[[`, "files"), lapply(orig, `[[`, "files")) &&
+        identical(flat_sums(back), flat_sums(orig)) &&
         identical(
             vapply(back, function(x) isTRUE(x[['extract']]), logical(1)),
             vapply(orig, function(x) isTRUE(x[['extract']]), logical(1))
@@ -136,7 +151,7 @@
             next
         }
 
-        unknown <- setdiff(names(entry), c("files", "extract"))
+        unknown <- setdiff(names(entry), c("files", "extract", "checksums"))
         if (length(unknown) > 0L) {
             add(ds, ": unknown key(s): ", paste(unknown, collapse = ", "))
         }
@@ -176,6 +191,34 @@
         if (anyDuplicated(bn) > 0L) {
             add(ds, ": duplicate filename(s) across categories: ",
                 paste(unique(bn[duplicated(bn)]), collapse = ", "))
+        }
+
+        # `checksums` records which bytes an entry was written against, keyed
+        # by filename, as provenance for anyone wanting to confirm what they
+        # downloaded. Nothing verifies them at runtime, so the only active
+        # protection is here: a key naming a file the dataset does not
+        # download means a url changed without its checksum, and the recorded
+        # value has quietly become a lie.
+        sums <- entry[["checksums"]]
+        if (!is.null(sums)) {
+            if (!is.list(sums) || is.null(names(sums)) || length(sums) == 0L) {
+                add(ds, ": `checksums` must be a non-empty named list")
+            } else {
+                orphans <- setdiff(names(sums), bn)
+                if (length(orphans) > 0L) {
+                    add(ds, ": checksum(s) for file(s) this dataset does not",
+                        " download: ", paste(orphans, collapse = ", "))
+                }
+                bad <- names(sums)[!vapply(sums, function(x) {
+                    is.character(x) && length(x) == 1L && !is.na(x) &&
+                        grepl("^(md5|sha1|sha256|sha512):[0-9a-f]+$", tolower(x))
+                }, logical(1))]
+                if (length(bad) > 0L) {
+                    add(ds, ": checksum(s) must read '<algo>:<hex>' with algo",
+                        " one of md5/sha1/sha256/sha512: ",
+                        paste(bad, collapse = ", "))
+                }
+            }
         }
     }
 

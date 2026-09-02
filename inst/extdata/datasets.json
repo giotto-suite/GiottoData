@@ -71,6 +71,12 @@
             "spatial_locs": ["https://zenodo.org/record/4034228/files/BeadLocationsForR.csv"],
             "expr_matrix": ["https://zenodo.org/record/4034228/files/MappedDGEForR.csv"],
             "metadata": ["https://zenodo.org/record/4034228/files/l1.cerebellum.cellID.txt", "https://zenodo.org/record/4034228/files/l1.cerebellum.cells.nonblood.txt", "https://zenodo.org/record/4034228/files/l1.cerebellum.cells.txt", "https://zenodo.org/record/4034228/files/l1.cerebellum.class.txt", "https://zenodo.org/record/4034228/files/l1.cerebellum.genes.txt", "https://zenodo.org/record/4034228/files/l1.cerebellum.txt"]
+        },
+        "checksums": {
+            "MappedDGEForR.csv": "md5:19506f69b5dd5b6758ba73e5c36da285",
+            "l1.cerebellum.cellID.txt": "md5:493b2418d585bce112fb93f3337edd7d",
+            "l1.cerebellum.cells.nonblood.txt": "md5:f6316e97da7bd4deee46b4f18f5a4dd7",
+            "l1.cerebellum.cells.txt": "md5:712acdbd920ce9dbe96f2f5d364bdcec"
         }
     },
     "ST_SCC": {
@@ -113,11 +119,17 @@
         "files": {
             "bundle": ["https://github.com/drieslab/spatial-datasets/releases/download/crops-2026-09/xenium_mini_lung_ffpe.zip"]
         },
+        "checksums": {
+            "xenium_mini_lung_ffpe.zip": "sha256:e9d55168e0e9c6c1d5fb6e07241e3139fd6e69f5874344ea59d4bf2bd3977bfd"
+        },
         "extract": true
     },
     "stereoseq_mini_mouse_eyeball": {
         "files": {
             "bundle": ["https://github.com/drieslab/spatial-datasets/releases/download/crops-2026-09/stereoseq_mini_mouse_eyeball.zip"]
+        },
+        "checksums": {
+            "stereoseq_mini_mouse_eyeball.zip": "sha256:d186f2b7e49536146357765e07a08ae7bc7c2284c06120340355775a52717510"
         },
         "extract": true
     }
