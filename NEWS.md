@@ -1,3 +1,8 @@
+# GiottoData 0.3.3
+
+## Bug fixes
+- Archive extraction stripped the wrapping folder from its record of extracted paths with a regex built from the folder name, so a wrapper whose name contained regex metacharacters left the record empty. Files landed correctly but the archive was treated as never extracted and re-downloaded on every call. The prefix is now removed exactly
+
 # GiottoData 0.3.2
 
 ## New
