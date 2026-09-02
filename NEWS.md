@@ -1,3 +1,9 @@
+# GiottoData 0.3.5
+
+## Enhancements
+- Manifest entries may record a `checksums` map, keyed by filename, holding the value a source published or that was computed at publishing time (`"<algo>:<hex>"`, md5/sha1/sha256/sha512). These are provenance — a note of which bytes an entry was written against, so anyone can confirm what they downloaded. They are not verified at runtime. Recorded for `xenium_mini_lung_ffpe`, `stereoseq_mini_mouse_eyeball` and `slideseq_cerebellum`
+- The manifest validator rejects a checksum naming a file the dataset does not download, so a url cannot be changed while leaving a stale checksum behind
+
 # GiottoData 0.3.4
 
 ## Bug fixes

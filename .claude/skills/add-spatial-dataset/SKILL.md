@@ -57,13 +57,24 @@ when parsed.
    **omit any `?download=1` suffix**. The downloader names the local file with
    `basename(url)`, so a query string would be written into the filename.
 
-   Zenodo also publishes a checksum per file, worth recording in the PR
-   description:
+2. **Optionally record a checksum.** If the source publishes one, or you hashed
+   the file before uploading it, note it under `checksums` keyed by filename:
 
-   ```bash
-   curl -s "https://zenodo.org/api/records/<id>" \
-     | python3 -c "import json,sys; [print(f['key'], f['size'], f.get('checksum')) for f in json.load(sys.stdin)['files']]"
+   ```r
+   m$my_dataset$checksums[["bundle.zip"]] <- "sha256:e9d55168..."
    ```
+
+   A GitHub release publishes one per asset (`gh api
+   repos/<o>/<r>/releases/tags/<tag> --jq '.assets[] | "\(.name) \(.digest)"'`),
+   Zenodo publishes md5 in its record api, and otherwise `shasum -a 256 <file>`
+   gives you one. `md5`, `sha1`, `sha256` and `sha512` are all accepted; the
+   value carries its own algorithm.
+
+   This is **provenance, not a runtime check** — nothing verifies it on
+   download. It records which bytes the entry was written against so anyone can
+   confirm what they have. Optional: entries without one work exactly as before.
+   If you change a url, update or remove its checksum in the same commit; the
+   validator rejects a checksum naming a file the dataset no longer downloads.
 
 2. **Edit the manifest as a list and write it back.** Run from the package root.
 
