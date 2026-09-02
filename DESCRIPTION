@@ -20,14 +20,14 @@ URL: https://giotto-suite.github.io/GiottoData/, https://github.com/giotto-suite
 BugReports: https://github.com/giotto-suite/GiottoData/issues
 Depends:
     R (>= 4.3.0),
-    GiottoClass (>= 0.3.1),
-    utils (>= 4.3.0)
+    GiottoClass (>= 0.3.1)
 Imports:
     data.table (>= 1.14.0),
     GiottoUtils (>= 0.1.11),
     jsonlite,
     rprojroot,
-    tools
+    tools,
+    utils
 Suggests:
     testthat (>= 3.0.0),
     withr,
