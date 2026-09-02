@@ -6,7 +6,7 @@
 \usage{
 getSpatialDataset(
   dataset = listSpatialDatasetNames(),
-  directory = tools::R_user_dir("GiottoData", "cache"),
+  directory = giottoDataCache(),
   verbose = TRUE,
   dryrun = FALSE,
   force = FALSE,
@@ -20,8 +20,8 @@ getSpatialDataset(
 \item{dataset}{dataset to download. One of [listSpatialDatasetNames()]}
 
 \item{directory}{directory to save the data to. Datasets are placed in a
-subdirectory named after `dataset`. Defaults to a persistent per-user cache
-location (see \code{\link[tools]{R_user_dir}}).}
+subdirectory named after `dataset`. Defaults to [giottoDataCache()], a
+persistent per-user location.}
 
 \item{verbose}{verbosity}
 

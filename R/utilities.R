@@ -1,3 +1,31 @@
+#' @title GiottoData cache directory
+#' @name giottoDataCache
+#' @description
+#' Path that \pkg{GiottoData} downloads datasets into. Used as the default
+#' `directory` for [getSpatialDataset()] and [getSODBDataset()], both of which
+#' skip files already present there, so it accumulates across sessions.
+#'
+#' The location follows \code{\link[tools]{R_user_dir}} and can be relocated
+#' by setting the `R_USER_CACHE_DIR` environment variable, which is how a CI
+#' job would point it at a restorable cache.
+#'
+#' Nothing is created by calling this: it computes a path.
+#' @param \dots optional path components appended with `file.path()`
+#' @returns character path
+#' @examples
+#' giottoDataCache()
+#'
+#' # inspect or clear what has accumulated
+#' \dontrun{
+#' list.files(giottoDataCache())
+#' unlink(giottoDataCache("merfish_preoptic"), recursive = TRUE)
+#' }
+#' @export
+giottoDataCache <- function(...) {
+    file.path(tools::R_user_dir("GiottoData", "cache"), ...)
+}
+
+
 #' @title Get GiottoData paths
 #' @name giottodata_paths
 #' @description Utility functions to get helpful filepaths within the

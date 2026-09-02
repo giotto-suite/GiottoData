@@ -363,8 +363,8 @@ listSpatialDatasetCategories <- function() {
 #' @name getSpatialDataset
 #' @param dataset dataset to download. One of [listSpatialDatasetNames()]
 #' @param directory directory to save the data to. Datasets are placed in a
-#' subdirectory named after `dataset`. Defaults to a persistent per-user cache
-#' location (see \code{\link[tools]{R_user_dir}}).
+#' subdirectory named after `dataset`. Defaults to [giottoDataCache()], a
+#' persistent per-user location.
 #' @param verbose verbosity
 #' @param dryrun dryrun: does not download data but shows download commands
 #' @param force logical. Re-download files that are already present
@@ -397,7 +397,7 @@ listSpatialDatasetCategories <- function() {
 #' returned invisibly.
 #' @export
 getSpatialDataset <- function(dataset = listSpatialDatasetNames(),
-                              directory = tools::R_user_dir("GiottoData", "cache"),
+                              directory = giottoDataCache(),
                               verbose = TRUE,
                               dryrun = FALSE,
                               force = FALSE,
