@@ -19,7 +19,7 @@ LazyData: true
 URL: https://giotto-suite.github.io/GiottoData/, https://github.com/giotto-suite/GiottoData
 BugReports: https://github.com/giotto-suite/GiottoData/issues
 Depends:
-    R (>= 4.3.0),
+    R (>= 4.1.0),
     GiottoClass (>= 0.3.1)
 Imports:
     data.table (>= 1.14.0),
