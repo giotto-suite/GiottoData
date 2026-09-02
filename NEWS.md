@@ -1,3 +1,16 @@
+# GiottoData 0.3.4
+
+## Bug fixes
+- `listSODBDatasetNames()` and `listSODBDatasetExperimentNames()` checked for the python package as `"pysdob"`, a name that can never match, so pysodb was reported missing even when installed and a github install was attempted on every call
+- `getSODBDataset()` no longer writes into the working directory. It wrote a hardcoded `./SODB_dataset_for Giotto.h5ad`, so running it from a package checkout left a large file in the repo, and a second call silently overwrote the first dataset's h5ad
+- The SODB functions no longer reach into GiottoClass internals via `:::` (6 call sites). One passed an argument name that only worked by partial matching
+
+## Enhancements
+- New exported `giottoDataCache()` returns the directory datasets are downloaded into, and is the default `directory` for `getSpatialDataset()` and `getSODBDataset()`. Gives a supported way to locate, inspect and clear the cache
+- `getSODBDataset()` caches the fetched h5ad under `giottoDataCache("sodb")`, named after the dataset and experiment, and converts the cached copy on later calls. New `directory`, `force` and `verbose` params
+- SODB python dependency checks go through `GiottoUtils::package_check()` and now also cover `anndata` and `squidpy`, which these functions require but never verified
+- `env_name` defaults to `NULL` on all three SODB functions, using the configured giotto python path rather than a hardcoded `"giotto_env"`
+
 # GiottoData 0.3.3
 
 ## Bug fixes

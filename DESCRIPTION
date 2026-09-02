@@ -1,7 +1,7 @@
 Package: GiottoData
 Type: Package
 Title: Datasets for Giotto
-Version: 0.3.3
+Version: 0.3.4
 Authors@R: c(
 	person("Ruben", "Dries", email = "rubendries@gmail.com",
 		 role = c("aut", "cre"), comment = c(ORCID = "0000-0001-7650-7754")),
@@ -24,7 +24,7 @@ Depends:
     utils (>= 4.3.0)
 Imports:
     data.table (>= 1.14.0),
-    GiottoUtils (>= 0.1.7),
+    GiottoUtils (>= 0.1.11),
     jsonlite,
     rprojroot,
     tools

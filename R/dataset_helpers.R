@@ -495,13 +495,54 @@ getSpatialDataset <- function(dataset = listSpatialDatasetNames(),
     return(invisible(dest_dir))
 }
 
-#' @title listSODBDatasetNames
+# SODB access needs pysodb plus the two packages its objects are built from.
+# Routed through `package_check()` rather than GiottoClass internals: the
+# `:::` calls this replaces reached into another package's private API, and
+# two of them passed a misspelled package name that could never match, so
+# pysodb was reported missing even when installed.
+.check_pysodb_pkgs <- function() {
+    pysodb_github <- "git+https://github.com/TencentAILabHealthcare/pysodb.git"
+    package_check(
+        pkg_name = c("pysodb", "anndata", "squidpy"),
+        repository = c(
+            paste0("pip:", pysodb_github),
+            "pip:anndata",
+            "pip:squidpy"
+        )
+    )
+}
+
+
+# Where a fetched SODB dataset is cached. Namespaced under `sodb` so a SODB
+# dataset name cannot collide with a spatial dataset directory, and keyed on
+# the experiment too, since one dataset has several and the previous
+# hardcoded filename could only ever hold one.
+.sodb_cache_file <- function(dataset_name,
+                             experiment_name,
+                             directory = giottoDataCache()) {
+    safe <- function(x) {
+        # names come from SODB and are arbitrary text. Collapsing separators is
+        # what keeps the result inside `directory`; stripping a leading dot
+        # keeps it from becoming a hidden file.
+        x <- gsub("[^A-Za-z0-9._-]+", "_", as.character(x))
+        sub("^[.]+", "", x)
+    }
+    file.path(
+        directory, "sodb",
+        paste0(safe(dataset_name), "__", safe(experiment_name), ".h5ad")
+    )
+}
+
+
+#' @title List SODB dataset names
 #' @name listSODBDatasetNames
+#' @description
+#' List datasets available in the Spatial Omics DataBase (SODB). Works via the
+#' \pkg{pysodb} python package. Also requires the \pkg{anndata} and
+#' \pkg{squidpy} python packages.
 #' @param category name of category for which dataset names will be listed.
-#' @param env_name Python environment within which pysodb is installed.
-#' If it is not already installed, the user
-#' will be prompted to install `pysodb`
-#' DEFAULT: "giotto_env"
+#' @param env_name Calls [GiottoClass::set_giotto_python_path()]. Path to
+#' python binary to use or envname. Leaving as `NULL` will use the default.
 #' @details Returns a vector containing the names of datasets associated with
 #' the provided `category`.
 #' @export
@@ -513,18 +554,9 @@ listSODBDatasetNames <- function(category = c(
         "Spatial Genomics",
         "Spatial MultiOmics"
     ),
-    env_name = "giotto_env") {
-    pysodb_installed <- GiottoClass:::checkPythonPackage(
-        package_name = "pysdob",
-        env_to_use = env_name
-    )
-
-    if (!pysodb_installed) {
-        GiottoClass:::checkPythonPackage(
-            github_package_url = "git+https://github.com/TencentAILabHealthcare/pysodb.git",
-            env_to_use = env_name
-        )
-    }
+    env_name = NULL) {
+    set_giotto_python_path(python_path = env_name, verbose = FALSE)
+    .check_pysodb_pkgs()
 
     sel_category <- match.arg(arg = category, choices = c(
         "All",
@@ -547,14 +579,15 @@ listSODBDatasetNames <- function(category = c(
     return(sodb_dataset_names)
 }
 
-#' @title listSODBDatasetExperimentNames
+#' @title List SODB dataset experiment names
 #' @name listSODBDatasetExperimentNames
+#' @description
+#' List the experiments belonging to one Spatial Omics DataBase (SODB)
+#' dataset. Works via the \pkg{pysodb} python package. Also requires the
+#' \pkg{anndata} and \pkg{squidpy} python packages.
 #' @param dataset_name name of dataset for which experiment names will be listed.
 #'        Must exist within the SODB.
-#' @param env_name Python environment within which pysodb is installed.
-#' If it is not already installed, the user
-#' will be prompted to install `pysodb`
-#' DEFAULT: "giotto_env"
+#' @inheritParams listSODBDatasetNames
 #' @details
 #' Returns a vector containing the names of experiments associated with
 #' the provided `dataset_name`.
@@ -562,18 +595,9 @@ listSODBDatasetNames <- function(category = c(
 #' Run \preformatted{listSODBDatasetNames()} to find names of SODB datasets.
 #' @export
 listSODBDatasetExperimentNames <- function(dataset_name = NULL,
-    env_name = "giotto_env") {
-    pysodb_installed <- GiottoClass:::checkPythonPackage(
-        package_name = "pysdob",
-        env_to_use = env_name
-    )
-
-    if (!pysodb_installed) {
-        GiottoClass:::checkPythonPackage(
-            github_package_url = "git+https://github.com/TencentAILabHealthcare/pysodb.git",
-            env_to_use = env_name
-        )
-    }
+    env_name = NULL) {
+    set_giotto_python_path(python_path = env_name, verbose = FALSE)
+    .check_pysodb_pkgs()
 
     if (is.null(dataset_name)) {
         stop(GiottoUtils::wrap_txt("A dataset name must be provided.
@@ -599,16 +623,21 @@ listSODBDatasetExperimentNames <- function(dataset_name = NULL,
 #'        Must exist within the SODB.
 #' @param experiment_name name of one experiment associated with `dataset_name`
 #'        By default, the first experiment will be used.
-#' @param env_name name of the conda environment within which
-#'        pysodb is already installed, or within which installation
-#'        of pysodb will be prompted
+#' @inheritParams listSODBDatasetNames
+#' @param directory directory to cache the downloaded h5ad in. Defaults to
+#' [giottoDataCache()], under a `sodb` subdirectory, named after the dataset
+#' and experiment.
+#' @param force logical. Re-fetch the dataset even if it is already cached
+#' @param verbose verbosity
 #' @details
 #' Interface with the Spatial Omics DataBase (SODB) using the
 #' python extension, pysodb, from TenCent.
 #'
-#' This function will write an anndata h5ad file for a provided dataset
-#' name to the current working directory and will then  convert
-#' the h5ad into a Giotto Object.
+#' This function writes an anndata h5ad file for the requested dataset and
+#' experiment into `directory`, then converts it into a Giotto object. The
+#' h5ad is kept, so a later request for the same dataset and experiment
+#' converts the cached copy instead of fetching again. Pass `force = TRUE` to
+#' re-fetch.
 #'
 #' Run \preformatted{listSODBDatasetNames()} to find names of SODB datasets.
 #' Run \preformatted{listSODBDatasetExperimentNames()} to find names of
@@ -658,51 +687,67 @@ listSODBDatasetExperimentNames <- function(dataset_name = NULL,
 #' @export
 getSODBDataset <- function(dataset_name = NULL,
     experiment_name = "default",
-    env_name = "giotto_env") {
-    pysodb_installed <- GiottoClass:::checkPythonPackage(
-        package = "pysodb",
-        env_to_use = env_name
-    )
-    if (!pysodb_installed) {
-        GiottoClass:::checkPythonPackage(
-            github_package_url = "git+https://github.com/TencentAILabHealthcare/pysodb.git",
-            env_to_use = env_name
-        )
-        # not returning value to variable because this
-        # will crash downstream if unsuccessful.
-    }
+    env_name = NULL,
+    directory = giottoDataCache(),
+    force = FALSE,
+    verbose = TRUE) {
     if (is.null(dataset_name)) {
         stop(GiottoUtils::wrap_txt("A dataset name must be provided.
                                Run `listSODBDatasetNames()` for dataset names.",
             errWidth = TRUE
         ))
     }
-    # Import interface_sodb, a python module for importing data from SODB
-    interface_sodb <- system.file("python",
-        "interface_sodb.py",
-        package = "GiottoData"
-    )
 
-    reticulate::source_python(interface_sodb)
+    h5ad_path <- .sodb_cache_file(dataset_name, experiment_name, directory)
+    dir.create(dirname(h5ad_path), recursive = TRUE, showWarnings = FALSE)
 
-    # Try to get data from SODB using provided dataset and experiment names
-    sodb_adata <- get_SODB_dataset(
-        dataset_name = dataset_name,
-        experiment_name = experiment_name
-    )
+    # the h5ad is cached rather than written to a temp location, so a repeat
+    # request for the same dataset and experiment converts the local copy
+    # instead of fetching again
+    if (file.exists(h5ad_path) && !force) {
+        vmsg(.v = verbose, "cached, skipping download: ", basename(h5ad_path))
+    } else {
+        set_giotto_python_path(python_path = env_name, verbose = FALSE)
+        .check_pysodb_pkgs()
 
-    # Check validity of returned anndata object.
-    # Nothing will happen if it passes
-    # A python error will be thrown otherwise
-    check_SODB_adata(
-        dataset_name = dataset_name,
-        adata = sodb_adata,
-        experiment_name = experiment_name
-    )
+        # Import interface_sodb, a python module for importing data from SODB
+        interface_sodb <- system.file("python",
+            "interface_sodb.py",
+            package = "GiottoData"
+        )
 
-    sodb_adata$write_h5ad("./SODB_dataset_for Giotto.h5ad")
+        reticulate::source_python(interface_sodb)
 
-    gobject <- Giotto::anndataToGiotto(anndata_path = "./SODB_dataset_for Giotto.h5ad")
+        # Try to get data from SODB using provided dataset and experiment names
+        sodb_adata <- get_SODB_dataset(
+            dataset_name = dataset_name,
+            experiment_name = experiment_name
+        )
+
+        # Check validity of returned anndata object.
+        # Nothing will happen if it passes
+        # A python error will be thrown otherwise
+        check_SODB_adata(
+            dataset_name = dataset_name,
+            adata = sodb_adata,
+            experiment_name = experiment_name
+        )
+
+        # written to a `.part` sidecar and renamed on success, so an
+        # interrupted write is never mistaken for a cached dataset
+        partfile <- paste0(h5ad_path, ".part")
+        on.exit(unlink(partfile), add = TRUE)
+        vmsg(.v = verbose, "Writing ", basename(h5ad_path))
+        sodb_adata$write_h5ad(partfile)
+        if (!file.rename(partfile, h5ad_path)) {
+            stop("[getSODBDataset] unable to move h5ad into place: ",
+                h5ad_path,
+                call. = FALSE
+            )
+        }
+    }
+
+    gobject <- Giotto::anndataToGiotto(anndata_path = h5ad_path)
 
     return(gobject)
 }

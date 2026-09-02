@@ -2,24 +2,24 @@
 % Please edit documentation in R/dataset_helpers.R
 \name{listSODBDatasetNames}
 \alias{listSODBDatasetNames}
-\title{listSODBDatasetNames}
+\title{List SODB dataset names}
 \usage{
 listSODBDatasetNames(
   category = c("All", "Spatial Transcriptomics", "Spatial Proteomics",
     "Spatial Metabolomics", "Spatial Genomics", "Spatial MultiOmics"),
-  env_name = "giotto_env"
+  env_name = NULL
 )
 }
 \arguments{
 \item{category}{name of category for which dataset names will be listed.}
 
-\item{env_name}{Python environment within which pysodb is installed.
-If it is not already installed, the user
-will be prompted to install `pysodb`
-DEFAULT: "giotto_env"}
+\item{env_name}{Calls [GiottoClass::set_giotto_python_path()]. Path to
+python binary to use or envname. Leaving as `NULL` will use the default.}
 }
 \description{
-listSODBDatasetNames
+List datasets available in the Spatial Omics DataBase (SODB). Works via the
+\pkg{pysodb} python package. Also requires the \pkg{anndata} and
+\pkg{squidpy} python packages.
 }
 \details{
 Returns a vector containing the names of datasets associated with

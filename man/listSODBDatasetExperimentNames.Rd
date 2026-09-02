@@ -2,21 +2,21 @@
 % Please edit documentation in R/dataset_helpers.R
 \name{listSODBDatasetExperimentNames}
 \alias{listSODBDatasetExperimentNames}
-\title{listSODBDatasetExperimentNames}
+\title{List SODB dataset experiment names}
 \usage{
-listSODBDatasetExperimentNames(dataset_name = NULL, env_name = "giotto_env")
+listSODBDatasetExperimentNames(dataset_name = NULL, env_name = NULL)
 }
 \arguments{
 \item{dataset_name}{name of dataset for which experiment names will be listed.
 Must exist within the SODB.}
 
-\item{env_name}{Python environment within which pysodb is installed.
-If it is not already installed, the user
-will be prompted to install `pysodb`
-DEFAULT: "giotto_env"}
+\item{env_name}{Calls [GiottoClass::set_giotto_python_path()]. Path to
+python binary to use or envname. Leaving as `NULL` will use the default.}
 }
 \description{
-listSODBDatasetExperimentNames
+List the experiments belonging to one Spatial Omics DataBase (SODB)
+dataset. Works via the \pkg{pysodb} python package. Also requires the
+\pkg{anndata} and \pkg{squidpy} python packages.
 }
 \details{
 Returns a vector containing the names of experiments associated with
