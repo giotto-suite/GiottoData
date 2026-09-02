@@ -84,3 +84,61 @@ test_that("extraction strips the wrapper, drops noise, and removes the archive",
     expect_no_error(GiottoData:::.gdata_extract(archive, dest, verbose = FALSE))
     expect_true(file.exists(file.path(dest, "a.txt")))
 })
+
+test_that("a wrapper name with regex metacharacters is stripped exactly", {
+    skip_if(Sys.which("zip") == "", "no zip binary")
+
+    # wrapper names are arbitrary vendor text; a regex-based strip would
+    # mis-handle this and silently leave the stamp empty, causing a re-download
+    wrapper <- "SAW_v8.2.0(final)"
+
+    src <- withr::local_tempdir()
+    dir.create(file.path(src, wrapper, "image"), recursive = TRUE)
+    writeLines("x", file.path(src, wrapper, "cells.parquet"))
+    writeLines("y", file.path(src, wrapper, "image", "he.tif"))
+
+    dest <- withr::local_tempdir()
+    archive <- file.path(dest, "bundle.zip")
+    old <- setwd(src); on.exit(setwd(old), add = TRUE)
+    utils::zip(archive, files = wrapper, flags = "-rq")
+    setwd(old)
+    skip_if(!file.exists(archive), "zip did not produce an archive")
+
+    GiottoData:::.gdata_extract(archive, dest, verbose = FALSE)
+
+    expect_true(file.exists(file.path(dest, "cells.parquet")))
+    expect_true(file.exists(file.path(dest, "image", "he.tif")))
+    expect_false(dir.exists(file.path(dest, wrapper)))
+
+    # the stamp must record post-strip paths, or the archive is treated as
+    # never extracted and gets downloaded again
+    expect_true("cells.parquet" %in% GiottoData:::.gdata_stamp_read(dest)$bundle.zip)
+    expect_identical(GiottoData:::.gdata_extracted_ok(dest), "bundle.zip")
+})
+
+test_that("nested directories survive the wrapper strip", {
+    skip_if(Sys.which("zip") == "", "no zip binary")
+
+    src <- withr::local_tempdir()
+    dir.create(file.path(src, "Bundle", "morphology_focus"), recursive = TRUE)
+    dir.create(file.path(src, "Bundle", "cell_feature_matrix"), recursive = TRUE)
+    writeLines("a", file.path(src, "Bundle", "cells.parquet"))
+    writeLines("b", file.path(src, "Bundle", "morphology_focus", "f0.ome.tif"))
+    writeLines("c", file.path(src, "Bundle", "cell_feature_matrix", "barcodes.tsv"))
+
+    dest <- withr::local_tempdir()
+    archive <- file.path(dest, "b.zip")
+    old <- setwd(src); on.exit(setwd(old), add = TRUE)
+    utils::zip(archive, files = "Bundle", flags = "-rq")
+    setwd(old)
+    skip_if(!file.exists(archive), "zip did not produce an archive")
+
+    GiottoData:::.gdata_extract(archive, dest, verbose = FALSE)
+
+    expect_true(dir.exists(file.path(dest, "morphology_focus")))
+    expect_true(dir.exists(file.path(dest, "cell_feature_matrix")))
+    expect_true(file.exists(file.path(dest, "morphology_focus", "f0.ome.tif")))
+    expect_true(file.exists(file.path(dest, "cell_feature_matrix", "barcodes.tsv")))
+    # nothing was collapsed to the root
+    expect_length(list.files(dest, pattern = "ome[.]tif$"), 0L)
+})

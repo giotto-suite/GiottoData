@@ -312,7 +312,11 @@
                 file.rename(file.path(rdir, item), file.path(dest_dir, item))
             }
             unlink(rdir, recursive = TRUE)
-            wanted <- sub(paste0("^", root, "/"), "", wanted)
+            # exact prefix removal rather than a regex: a wrapper name is
+            # arbitrary vendor text and may hold metacharacters. Every
+            # non-junk entry is the wrapper or sits under it, so the cut is
+            # unconditional and the wrapper's own entry falls out empty.
+            wanted <- substring(wanted, nchar(root) + 2L)
             wanted <- wanted[nzchar(wanted)]
         }
 
