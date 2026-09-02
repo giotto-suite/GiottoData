@@ -108,5 +108,17 @@
             "bundle": ["https://zenodo.org/records/13207308/files/workshop_xenium.zip"]
         },
         "extract": true
+    },
+    "xenium_mini_lung_ffpe": {
+        "files": {
+            "bundle": ["https://github.com/drieslab/spatial-datasets/releases/download/crops-2026-09/xenium_mini_lung_ffpe.zip"]
+        },
+        "extract": true
+    },
+    "stereoseq_mini_mouse_eyeball": {
+        "files": {
+            "bundle": ["https://github.com/drieslab/spatial-datasets/releases/download/crops-2026-09/stereoseq_mini_mouse_eyeball.zip"]
+        },
+        "extract": true
     }
 }

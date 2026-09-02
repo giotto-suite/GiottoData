@@ -1,3 +1,9 @@
+# GiottoData 0.3.2
+
+## New
+- `xenium_mini_lung_ffpe`: 10X Xenium human lung cancer FFPE crop, 1531 cells and 541 features over a 425 um window, with the four `morphology_focus` OME-TIFFs
+- `stereoseq_mini_mouse_eyeball`: Stereo-seq mouse eyeball crop (SAW 8.2.0, run C04687E314), a 1.2 mm window carrying the tissue, cellbin and adjusted cellbin `.gef`, two `.h5ad`, and the registered H&E
+
 # GiottoData 0.3.1
 
 ## Enhancements
