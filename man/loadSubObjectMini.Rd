@@ -16,3 +16,12 @@ is available (see \code{\link{listSubObjectMini}})}
 Utility function to load a mini giotto suite S4 subobject.
 Can be useful for testing functions quickly or providing contained examples.
 }
+\details{
+The saved subobjects are serialized snapshots, so a file can predate a slot
+layout change in GiottoClass. The `spatialNetworkObj` and `nnNetObj` minis
+predate the 0.6.0 igraph migration and are run through `initialize()` on
+load, which is where GiottoClass keeps its in-class migration steps. Other
+types are returned as saved; `tests/testthat/test-mini-subobjects.R` checks
+every type against the installed class definition, so a mini that falls out
+of date fails there.
+}

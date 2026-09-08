@@ -5,6 +5,14 @@
 #' @param x subobject type to load
 #' @param idx which of multiple example subobjects to load when more than one
 #' is available (see \code{\link{listSubObjectMini}})
+#' @details
+#' The saved subobjects are serialized snapshots, so a file can predate a slot
+#' layout change in GiottoClass. The `spatialNetworkObj` and `nnNetObj` minis
+#' predate the 0.6.0 igraph migration and are run through `initialize()` on
+#' load, which is where GiottoClass keeps its in-class migration steps. Other
+#' types are returned as saved; `tests/testthat/test-mini-subobjects.R` checks
+#' every type against the installed class definition, so a mini that falls out
+#' of date fails there.
 #' @export
 loadSubObjectMini <- function(x, idx = 1L) {
     # declare data.table variables
@@ -25,6 +33,12 @@ loadSubObjectMini <- function(x, idx = 1L) {
         new_path <- gsub(pattern = ".*[/]GiottoData/|.*[/]GiottoData/inst/", replacement = "", x = original_path)
         new_path <- file.path(gdata_libdir(), new_path)
         load_data <- GiottoClass::reconnect(load_data, path = new_path)
+    }
+
+    # these minis were written before the 0.6.0 igraph migration, so they
+    # still carry @networkDT/@networkDT_before_filter and @igraph
+    if (x %in% c("spatialNetworkObj", "nnNetObj")) {
+        load_data <- methods::initialize(load_data)
     }
 
     return(load_data)
