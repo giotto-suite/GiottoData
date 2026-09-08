@@ -25,6 +25,7 @@ Imports:
     data.table (>= 1.14.0),
     GiottoUtils (>= 0.1.11),
     jsonlite,
+    methods,
     rprojroot,
     tools,
     utils
