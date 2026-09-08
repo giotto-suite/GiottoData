@@ -111,7 +111,9 @@ viz <- createSpatialGrid(
   sdimy_stepsize = 100
 )
 
-spatial_grid_obj <- getSpatialGrid(viz)
+# return_grid_Obj defaults to FALSE, which yields the gridDT instead of the
+# subobject. The saved mini has been a bare data.table because of this.
+spatial_grid_obj <- getSpatialGrid(viz, return_grid_Obj = TRUE)
 
 # images
 # Freshly generate to allow reconnection
