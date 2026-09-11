@@ -1,3 +1,9 @@
+# GiottoData 0.3.6
+
+## Bug fixes
+- `loadSubObjectMini()` returns `spatialNetworkObj` and `nnNetObj` minis that match the installed class definition. Both files were written before the 0.6.0 igraph migration and still carry `@networkDT`/`@networkDT_before_filter` and `@igraph`, so callers received objects whose slots the current accessors do not read. They are now passed through `initialize()`, which is where GiottoClass keeps its in-class migration steps. Callers that wrapped the loader in `initialize()` themselves no longer need to; doing so remains harmless
+- The `spatialGridObj` mini is a `spatialGridObj` rather than a bare `data.table`. `getSpatialGrid()` defaults `return_grid_Obj = FALSE`, so the generation script had always saved the `gridDT` alone. The grid contents are unchanged
+
 # GiottoData 0.3.5
 
 ## Enhancements
