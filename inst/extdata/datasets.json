@@ -138,7 +138,7 @@
             "bundle": ["https://github.com/drieslab/spatial-datasets/releases/download/crops-2026-09/cosmx_mini_colon_wtx.zip"]
         },
         "checksums": {
-            "cosmx_mini_colon_wtx.zip": "sha256:4c2eb743c8c7fd83c1c374a2716dfb32e9c5a44f858e2a38eeaeb56e2be3d446"
+            "cosmx_mini_colon_wtx.zip": "sha256:feddb0a1dbaf40dc0309481a79ee10d4a1f861534734542f90a316e672fb8ab8"
         },
         "extract": true
     }
