@@ -1,3 +1,8 @@
+# GiottoData 0.3.7
+
+## New
+- `cosmx_mini_colon_wtx`: NanoString CosMx Whole Transcriptome human colon adenocarcinoma crop (slide S0), a 3x3 block of nine adjacent fields of view (56-58, 70-72, 83-85) carrying 16,766 cells over the full 20,378-feature panel, in the vendor flat-file layout: expression, metadata, polygons and FOV positions. No transcript file or morphology images, so readers must be called with `load_transcripts = FALSE`
+
 # GiottoData 0.3.6
 
 ## Bug fixes
