@@ -132,5 +132,14 @@
             "stereoseq_mini_mouse_eyeball.zip": "sha256:d186f2b7e49536146357765e07a08ae7bc7c2284c06120340355775a52717510"
         },
         "extract": true
+    },
+    "cosmx_mini_colon_wtx": {
+        "files": {
+            "bundle": ["https://github.com/drieslab/spatial-datasets/releases/download/crops-2026-09/cosmx_mini_colon_wtx.zip"]
+        },
+        "checksums": {
+            "cosmx_mini_colon_wtx.zip": "sha256:feddb0a1dbaf40dc0309481a79ee10d4a1f861534734542f90a316e672fb8ab8"
+        },
+        "extract": true
     }
 }

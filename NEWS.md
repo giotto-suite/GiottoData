@@ -1,3 +1,11 @@
+# GiottoData 0.3.7
+
+## New
+- `cosmx_mini_colon_wtx`: NanoString CosMx Whole Transcriptome human colon adenocarcinoma crop (slide S0), a 3x3 block of nine adjacent fields of view (56-58, 70-72, 83-85) carrying 16,766 cells over the full 20,378-feature panel, in the vendor flat-file layout: expression, metadata, polygons and FOV positions. No transcript file or morphology images, so readers must be called with `load_transcripts = FALSE`
+
+## Bug fixes
+- `loadSubObjectMini("giottoPolygon")` returns overlaps in the current `overlapInfo` representation. The mini was saved with the intersection `SpatVector` overlaps that GiottoClass 0.4.7 replaced, and unwrapping does not convert them, so subsetting the polygon errored or silently cut the overlaps by point row. It is now passed through `updateGiottoPolygonObject()`
+
 # GiottoData 0.3.6
 
 ## Bug fixes
