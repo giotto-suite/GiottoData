@@ -41,6 +41,12 @@ loadSubObjectMini <- function(x, idx = 1L) {
         load_data <- methods::initialize(load_data)
     }
 
+    # the polygon mini still stores its overlaps as intersection SpatVectors,
+    # the representation GiottoClass replaced in 0.4.7
+    if (x == "giottoPolygon") {
+        load_data <- GiottoClass::updateGiottoPolygonObject(load_data)
+    }
+
     return(load_data)
 }
 

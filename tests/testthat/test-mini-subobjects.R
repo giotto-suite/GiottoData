@@ -49,6 +49,20 @@ test_that("the network minis are migrated off their pre-0.6.0 slots", {
     expect_gt(igraph::vcount(slot(nn, "network")), 0L)
 })
 
+test_that("the polygon mini carries current overlaps, not intersection SpatVectors", {
+    # saved before GiottoClass 0.4.7; unwrapping keeps the old representation,
+    # which the current polygon subsetting indexes by point row
+    for (idx in seq_len(nrow(listSubObjectMini("giottoPolygon")))) {
+        gp <- loadSubObjectMini("giottoPolygon", idx = idx)
+        ovlps <- slot(gp, "overlaps")
+        ovlps <- ovlps[names(ovlps) != "intensity"]
+        for (o in ovlps) {
+            expect_s4_class(o, "overlapInfo")
+            expect_false(inherits(o, "SpatVector"))
+        }
+    }
+})
+
 test_that("the spatialGridObj mini is the subobject, not its gridDT", {
     sg <- loadSubObjectMini("spatialGridObj")
     expect_s4_class(sg, "spatialGridObj")
