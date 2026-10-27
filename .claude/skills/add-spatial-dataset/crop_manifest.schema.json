@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "crop_manifest.schema.json",
     "title": "crop_manifest.json",
-    "description": "Provenance record shipped at the root of every cropped dataset archive. Records where the crop came from, how it was cut, what it contains and which script made it. Vendor-specific detail goes in the free-form `extra` and `detail` objects; everything else is fixed.",
+    "description": "Provenance record shipped at the root of every cropped dataset archive. Records what only the crop knows: where it came from, how it was cut, what it contains and which script made it. source, crop and counts accept further platform-specific fields; anything the vendor files in the archive already record does not belong here.",
     "type": "object",
     "required": ["schema_version", "fixture_name", "created", "source", "crop", "counts", "deviations", "files", "script"],
     "additionalProperties": false,
@@ -24,7 +24,6 @@
             "description": "The full vendor run the crop was cut from.",
             "type": "object",
             "required": ["technology", "organism", "tissue", "preservation", "dataset", "url", "software"],
-            "additionalProperties": false,
             "properties": {
                 "technology": {
                     "description": "Lowercase platform name, e.g. xenium, cosmx, visium_hd, stereoseq.",
@@ -63,21 +62,12 @@
                         "name": {"type": "string", "minLength": 1},
                         "version": {"type": "string", "minLength": 1}
                     }
-                },
-                "dir": {
-                    "description": "Local path the source was read from. Informational only.",
-                    "type": "string"
-                },
-                "extra": {
-                    "description": "Vendor-specific source metadata: panel, chemistry, pixel size, scalefactors.",
-                    "type": "object"
                 }
             }
         },
         "crop": {
             "type": "object",
             "required": ["method", "window", "translation"],
-            "additionalProperties": false,
             "properties": {
                 "method": {
                     "description": "How the window was chosen and what decides whether an edge cell or bin is kept.",
@@ -116,10 +106,6 @@
                         },
                         {"type": "null"}
                     ]
-                },
-                "extra": {
-                    "description": "Further geometry: other grids, image boxes, selection scoring.",
-                    "type": "object"
                 }
             }
         },
@@ -127,15 +113,10 @@
             "description": "What the crop contains. A count the format does not have is null.",
             "type": "object",
             "required": ["cells", "features", "transcripts"],
-            "additionalProperties": false,
             "properties": {
                 "cells": {"type": ["integer", "null"], "minimum": 0},
                 "features": {"type": ["integer", "null"], "minimum": 0},
-                "transcripts": {"type": ["integer", "null"], "minimum": 0},
-                "detail": {
-                    "description": "Per-file or per-bin-level counts.",
-                    "type": "object"
-                }
+                "transcripts": {"type": ["integer", "null"], "minimum": 0}
             }
         },
         "rebuilt": {

@@ -90,9 +90,16 @@ archive root, valid against
 [`crop_manifest.schema.json`](crop_manifest.schema.json). It is the
 machine-readable form of the release body: source run, window and translation,
 counts, files kept, rewritten or dropped, deviations from the vendor layout, and
-the cutting script with its sha256. Vendor-specific detail goes in
-`source.extra`, `crop.extra` and `counts.detail`; everything else is fixed.
-Datasets published whole, without cropping, do not need one.
+the cutting script with its sha256. Datasets published whole, without cropping,
+do not need one.
+
+Record what only the crop knows. `source` holds the basics (technology,
+organism, tissue, preservation, dataset name and url, vendor software version);
+panel, slide, pixel size, chemistry and scalefactors are already in the vendor
+files the archive carries (`experiment.xenium`, `scalefactors_json.json`, h5
+and GEF attributes) and are not repeated. `source`, `crop` and `counts` accept
+further fields when a platform needs them, such as a second grid's window or
+per-bin-level counts.
 
 Check the archive before uploading it:
 
