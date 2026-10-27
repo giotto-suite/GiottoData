@@ -144,7 +144,7 @@
     },
     "visiumhd_mini_crc": {
         "files": {
-            "bundle": ["https://github.com/drieslab/spatial-datasets/releases/download/crops-2026-09/visiumhd_mini_crc.zip"]
+            "bundle": ["https://github.com/drieslab/spatial-datasets/releases/download/visiumhd_mini_crc-v1/visiumhd_mini_crc.zip"]
         },
         "checksums": {
             "visiumhd_mini_crc.zip": "sha256:71bdea62ee0d3556e91b185905d6a8f10a1961a885ff9a179d17001c2c72994d"
