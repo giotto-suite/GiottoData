@@ -1,3 +1,8 @@
+# GiottoData 0.3.8
+
+## New
+- `visiumhd_mini_crc`: a 400 um crop of 10x's Visium HD human colorectal cancer FFPE run, with 2, 8 and 16 um binned outputs, 806 segmented cells and the cropped images
+
 # GiottoData 0.3.7
 
 ## New
