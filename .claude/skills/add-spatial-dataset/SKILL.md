@@ -39,6 +39,62 @@ when parsed.
   `getSpatialDataset()` returns is directly the vendor directory. You do not
   need to repackage an archive to achieve this.
 
+## Publishing an archive as a GitHub release
+
+Archives too large for the repo go on `drieslab/spatial-datasets` as release
+assets, **one release per dataset**. Each release is the permanent record of
+exactly one archive.
+
+- **Tag:** `<dataset>-v<N>`, where `<dataset>` is the manifest key. Start at
+  `v1`.
+- **Title:** `<dataset> v<N>`.
+- **One asset:** the archive the manifest entry downloads, named after the
+  dataset (`<dataset>.zip`).
+- **No date in the tag or title.** GitHub's publish date is the date of record.
+- **Not Latest.** Publish with `--latest=false`. With a release per dataset, the
+  repo-wide Latest flag would only mean whichever dataset was uploaded last.
+- **Never replace or delete a published asset.** Released GiottoData versions
+  carry its url and checksum. A changed archive is published as `v<N+1>`, the
+  manifest entry moves to it, and the old release stays.
+
+The release body is read by someone deciding whether the fixture fits their
+test. Write it in this order:
+
+1. One line: technology, organism, tissue and preservation.
+2. **Source:** the full run it was cut from: run name, vendor software version,
+   panel or chemistry, and a link if the run is public.
+3. **Crop:** window size and position in source coordinates, and how cells on
+   the edge were kept or dropped.
+4. **Counts:** cells, features, and transcripts or bins, whichever the vendor
+   format is built around.
+5. **Differences from the vendor layout:** files dropped, re-encoded or
+   rewritten, and coordinates translated. Name what a reader expecting the
+   full run will not find.
+6. **Provenance:** where the script that made it lives, or that it is not
+   available.
+7. Size in bytes and sha256. The sha256 must match the manifest's `checksums`
+   entry and GitHub's asset digest.
+
+From `v2` on, open the body with what changed from the previous version and why.
+
+Good practice, not yet required: ship a `crop_manifest.json` inside the archive
+recording the source run, window, counts, deviations from the vendor layout and
+the generating script's sha256. Existing crops follow this loosely; there is no
+fixed schema.
+
+```bash
+gh release create <dataset>-v1 <dataset>.zip -R drieslab/spatial-datasets \
+    --title "<dataset> v1" --notes-file notes.md --latest=false
+# must print the sha256 you hashed locally
+gh api repos/drieslab/spatial-datasets/releases/tags/<dataset>-v1 \
+    --jq '.assets[] | "\(.name) \(.digest)"'
+```
+
+`crops-2026-09` predates this rule and holds three archives as one batch
+(`xenium_mini_lung_ffpe`, `stereoseq_mini_mouse_eyeball`,
+`cosmx_mini_colon_wtx`). They stay there because released GiottoData versions
+point at them. Do not add to it.
+
 ## Procedure
 
 1. **Verify every url resolves before adding it.** A 404 in the manifest is
@@ -154,11 +210,6 @@ read the error rather than working around it:
   branch for anything new. Files over ~50 MB should go to a GitHub Release or
   Zenodo rather than into the repo, since GitHub hard-rejects blobs over 100 MB
   and repo history keeps every revision forever.
-- **Never replace or delete a release asset a merged entry points at.**
-  Released GiottoData versions carry that url and its checksum, so swapping the
-  bytes breaks the checksum and deleting them breaks the download. A corrected
-  archive is uploaded under a new tag or filename, and the entry moves to it.
-  Which release a new asset goes on is not fixed.
 - **`.gdata_manifest_dev()` and `.gdata_manifest_write()` are dev-only.** They
   resolve through `rprojroot` and only work in a source checkout. Runtime code
   uses `.gdata_manifest()`, which reads the installed copy.
