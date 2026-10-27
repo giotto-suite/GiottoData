@@ -1,7 +1,7 @@
 # GiottoData 0.3.8
 
 ## New
-- `visiumhd_mini_crc`: 10X Visium HD human colorectal cancer FFPE crop (Space Ranger 4.0.1), a 400 um window on the 16 um grid across the tissue edge (55% of 2 um bins in tissue), carrying the 2, 8 and 16 um binned outputs (h5 and matrix-market), 806 segmented cells with their cell and nucleus geojson, `barcode_mappings.parquet` and the cropped hires and lowres images. The 8 and 16 um matrices and the cell matrix are exact aggregates of the kept 2 um bins
+- `visiumhd_mini_crc`: a 400 um crop of 10x's Visium HD human colorectal cancer FFPE run, with 2, 8 and 16 um binned outputs, 806 segmented cells and the cropped images
 
 # GiottoData 0.3.7
 
