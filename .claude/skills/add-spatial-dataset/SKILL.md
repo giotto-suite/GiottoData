@@ -57,6 +57,12 @@ exactly one archive.
   carry its url and checksum. A changed archive is published as `v<N+1>`, the
   manifest entry moves to it, and the old release stays.
 
+`crops-2026-09` predates this rule and holds three archives as one batch
+(`xenium_mini_lung_ffpe`, `stereoseq_mini_mouse_eyeball`,
+`cosmx_mini_colon_wtx`). They stay there because released GiottoData versions
+point at them. Do not add to it. Their crop manifests, where present, predate
+the schema and do not validate against it.
+
 The release body is read by someone deciding whether the fixture fits their
 test. Write it in this order:
 
@@ -70,17 +76,35 @@ test. Write it in this order:
 5. **Differences from the vendor layout:** files dropped, re-encoded or
    rewritten, and coordinates translated. Name what a reader expecting the
    full run will not find.
-6. **Provenance:** where the script that made it lives, or that it is not
-   available.
+6. **Provenance:** where the script that made it lives. A cropped dataset
+   must have one; see `crop_manifest.json` below.
 7. Size in bytes and sha256. The sha256 must match the manifest's `checksums`
    entry and GitHub's asset digest.
 
 From `v2` on, open the body with what changed from the previous version and why.
 
-Good practice, not yet required: ship a `crop_manifest.json` inside the archive
-recording the source run, window, counts, deviations from the vendor layout and
-the generating script's sha256. Existing crops follow this loosely; there is no
-fixed schema.
+### `crop_manifest.json` (required for cropped datasets)
+
+A dataset cut from a larger vendor run ships a `crop_manifest.json` at the
+archive root, valid against
+[`crop_manifest.schema.json`](crop_manifest.schema.json). It is the
+machine-readable form of the release body: source run, window and translation,
+counts, files kept, rewritten or dropped, deviations from the vendor layout, and
+the cutting script with its sha256. Vendor-specific detail goes in
+`source.extra`, `crop.extra` and `counts.detail`; everything else is fixed.
+Datasets published whole, without cropping, do not need one.
+
+Check the archive before uploading it:
+
+```bash
+Rscript .claude/skills/add-spatial-dataset/check_crop_manifest.R <dataset>.zip <dataset>
+```
+
+It validates against the schema, checks `fixture_name` is the manifest key, and
+checks every file not marked `dropped` is in the archive. Write the release body
+from the same manifest so the two agree.
+
+### Creating the release
 
 ```bash
 gh release create <dataset>-v1 <dataset>.zip -R drieslab/spatial-datasets \
@@ -89,11 +113,6 @@ gh release create <dataset>-v1 <dataset>.zip -R drieslab/spatial-datasets \
 gh api repos/drieslab/spatial-datasets/releases/tags/<dataset>-v1 \
     --jq '.assets[] | "\(.name) \(.digest)"'
 ```
-
-`crops-2026-09` predates this rule and holds three archives as one batch
-(`xenium_mini_lung_ffpe`, `stereoseq_mini_mouse_eyeball`,
-`cosmx_mini_colon_wtx`). They stay there because released GiottoData versions
-point at them. Do not add to it.
 
 ## Procedure
 
