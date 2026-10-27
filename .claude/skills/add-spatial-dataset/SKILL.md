@@ -154,6 +154,11 @@ read the error rather than working around it:
   branch for anything new. Files over ~50 MB should go to a GitHub Release or
   Zenodo rather than into the repo, since GitHub hard-rejects blobs over 100 MB
   and repo history keeps every revision forever.
+- **Never replace or delete a release asset a merged entry points at.**
+  Released GiottoData versions carry that url and its checksum, so swapping the
+  bytes breaks the checksum and deleting them breaks the download. A corrected
+  archive is uploaded under a new tag or filename, and the entry moves to it.
+  Which release a new asset goes on is not fixed.
 - **`.gdata_manifest_dev()` and `.gdata_manifest_write()` are dev-only.** They
   resolve through `rprojroot` and only work in a source checkout. Runtime code
   uses `.gdata_manifest()`, which reads the installed copy.
