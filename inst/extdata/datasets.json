@@ -141,5 +141,14 @@
             "cosmx_mini_colon_wtx.zip": "sha256:feddb0a1dbaf40dc0309481a79ee10d4a1f861534734542f90a316e672fb8ab8"
         },
         "extract": true
+    },
+    "visiumhd_mini_crc": {
+        "files": {
+            "bundle": ["https://github.com/drieslab/spatial-datasets/releases/download/visiumhd_mini_crc-v1/visiumhd_mini_crc.zip"]
+        },
+        "checksums": {
+            "visiumhd_mini_crc.zip": "sha256:cfb6118a3e0d72efb6f7469aebd786314103dfabc85dfeac930d833475aa2179"
+        },
+        "extract": true
     }
 }
