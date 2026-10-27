@@ -39,6 +39,88 @@ when parsed.
   `getSpatialDataset()` returns is directly the vendor directory. You do not
   need to repackage an archive to achieve this.
 
+## Publishing an archive as a GitHub release
+
+Archives too large for the repo go on `drieslab/spatial-datasets` as release
+assets, **one release per dataset**. Each release is the permanent record of
+exactly one archive.
+
+- **Tag:** `<dataset>-v<N>`, where `<dataset>` is the manifest key. Start at
+  `v1`.
+- **Title:** `<dataset> v<N>`.
+- **One asset:** the archive the manifest entry downloads, named after the
+  dataset (`<dataset>.zip`).
+- **No date in the tag or title.** GitHub's publish date is the date of record.
+- **Not Latest.** Publish with `--latest=false`. With a release per dataset, the
+  repo-wide Latest flag would only mean whichever dataset was uploaded last.
+- **Never replace or delete a published asset.** Released GiottoData versions
+  carry its url and checksum. A changed archive is published as `v<N+1>`, the
+  manifest entry moves to it, and the old release stays.
+
+`crops-2026-09` predates this rule and holds three archives as one batch
+(`xenium_mini_lung_ffpe`, `stereoseq_mini_mouse_eyeball`,
+`cosmx_mini_colon_wtx`). They stay there because released GiottoData versions
+point at them. Do not add to it. Their crop manifests, where present, predate
+the schema and do not validate against it.
+
+The release body is read by someone deciding whether the fixture fits their
+test. Write it in this order:
+
+1. One line: technology, organism, tissue and preservation.
+2. **Source:** the full run it was cut from: run name, vendor software version,
+   panel or chemistry, and a link if the run is public.
+3. **Crop:** window size and position in source coordinates, and how cells on
+   the edge were kept or dropped.
+4. **Counts:** cells, features, and transcripts or bins, whichever the vendor
+   format is built around.
+5. **Differences from the vendor layout:** files dropped, re-encoded or
+   rewritten, and coordinates translated. Name what a reader expecting the
+   full run will not find.
+6. **Provenance:** where the script that made it lives. A cropped dataset
+   must have one; see `crop_manifest.json` below.
+7. Size in bytes and sha256. The sha256 must match the manifest's `checksums`
+   entry and GitHub's asset digest.
+
+From `v2` on, open the body with what changed from the previous version and why.
+
+### `crop_manifest.json` (required for cropped datasets)
+
+A dataset cut from a larger vendor run ships a `crop_manifest.json` at the
+archive root, valid against
+[`crop_manifest.schema.json`](crop_manifest.schema.json). It is the
+machine-readable form of the release body: source run, window and translation,
+counts, files kept, rewritten or dropped, deviations from the vendor layout, and
+the cutting script with its sha256. Datasets published whole, without cropping,
+do not need one.
+
+Record what only the crop knows. `source` holds the basics (technology,
+organism, tissue, preservation, dataset name and url, vendor software version);
+panel, slide, pixel size, chemistry and scalefactors are already in the vendor
+files the archive carries (`experiment.xenium`, `scalefactors_json.json`, h5
+and GEF attributes) and are not repeated. `source`, `crop` and `counts` accept
+further fields when a platform needs them, such as a second grid's window or
+per-bin-level counts.
+
+Check the archive before uploading it:
+
+```bash
+Rscript .claude/skills/add-spatial-dataset/check_crop_manifest.R <dataset>.zip <dataset>
+```
+
+It validates against the schema, checks `fixture_name` is the manifest key, and
+checks every file not marked `dropped` is in the archive. Write the release body
+from the same manifest so the two agree.
+
+### Creating the release
+
+```bash
+gh release create <dataset>-v1 <dataset>.zip -R drieslab/spatial-datasets \
+    --title "<dataset> v1" --notes-file notes.md --latest=false
+# must print the sha256 you hashed locally
+gh api repos/drieslab/spatial-datasets/releases/tags/<dataset>-v1 \
+    --jq '.assets[] | "\(.name) \(.digest)"'
+```
+
 ## Procedure
 
 1. **Verify every url resolves before adding it.** A 404 in the manifest is
