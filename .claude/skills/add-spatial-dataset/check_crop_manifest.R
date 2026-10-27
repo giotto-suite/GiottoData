@@ -43,8 +43,10 @@ if (grepl("\\.zip$", path)) {
 ok <- jsonvalidate::json_validate(json, schema, engine = "ajv", verbose = TRUE)
 if (!ok) {
     errs <- attr(ok, "errors")
-    fail(sprintf("schema: %s %s", ifelse(nzchar(errs$instancePath), errs$instancePath, "/"),
-                 errs$message))
+    extra <- errs$params$additionalProperty
+    detail <- ifelse(is.na(extra %||% NA), "", sprintf(": '%s'", extra))
+    fail(sprintf("schema: %s %s%s", ifelse(nzchar(errs$instancePath), errs$instancePath, "/"),
+                 errs$message, detail))
 }
 
 m <- jsonlite::fromJSON(json, simplifyVector = FALSE)
