@@ -1,3 +1,8 @@
+# GiottoData 0.3.9
+
+## New
+- `atera_mini_tiny`: a tiny 10x Atera v1 run made by 10x Genomics (human FFPE, 13 cells, 53-target panel, 1,011 transcripts), published whole in the vendor zarr layout with its morphology images
+
 # GiottoData 0.3.8
 
 ## New
