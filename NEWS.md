@@ -1,3 +1,8 @@
+# GiottoData 0.3.9
+
+## New
+- `merscope_mini_colon`: a 400 um crop of Vizgen's MERSCOPE human colon cancer FFPE run (region R1), with 2,090 segmented cells over the 815-gene panel and their 305,890 transcripts, in the vendor flat-file layout. No images
+
 # GiottoData 0.3.8
 
 ## New

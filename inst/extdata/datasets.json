@@ -150,5 +150,14 @@
             "visiumhd_mini_crc.zip": "sha256:cfb6118a3e0d72efb6f7469aebd786314103dfabc85dfeac930d833475aa2179"
         },
         "extract": true
+    },
+    "merscope_mini_colon": {
+        "files": {
+            "bundle": ["https://github.com/drieslab/spatial-datasets/releases/download/merscope_mini_colon-v1/merscope_mini_colon.zip"]
+        },
+        "checksums": {
+            "merscope_mini_colon.zip": "sha256:ee46f12fa574b618d9a477781fc57b69d24a0ddc4c07165626fae38a3f5690d6"
+        },
+        "extract": true
     }
 }
