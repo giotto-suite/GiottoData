@@ -1,3 +1,8 @@
+# GiottoData 0.3.9 (in development)
+
+## Changes
+- `getSODBDataset()` converts the downloaded `.h5ad` with `GiottoConnect::anndataToGiotto()`; Giotto no longer provides `anndataToGiotto()`. GiottoConnect is in Suggests.
+
 # GiottoData 0.3.8
 
 ## New

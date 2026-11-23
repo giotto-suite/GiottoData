@@ -790,7 +790,12 @@ getSODBDataset <- function(dataset_name = NULL,
         }
     }
 
-    gobject <- Giotto::anndataToGiotto(anndata_path = h5ad_path)
+    # the h5ad is converted by GiottoConnect (no python needed for this step)
+    package_check(
+        pkg_name = "GiottoConnect",
+        repository = "github:giotto-suite/GiottoConnect"
+    )
+    gobject <- GiottoConnect::anndataToGiotto(anndata_path = h5ad_path)
 
     return(gobject)
 }
