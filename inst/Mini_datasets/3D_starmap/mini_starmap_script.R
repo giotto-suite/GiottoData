@@ -231,16 +231,6 @@ spatFeatPlot2D(starmap_mini,
                network_color = 'lightgrey', 
                point_size = 1.5)
 
-silh_spatialgenes = silhouetteRank(gobject = starmap_mini) # TODO: suppress print output
-spatFeatPlot2D(starmap_mini, 
-               expression_values = 'scaled',
-               feats = silh_spatialgenes[1:4]$genes, # TODO update to use feats
-               point_shape = 'border', 
-               point_border_stroke = 0.1,
-               show_network = FALSE, 
-               network_color = 'lightgrey', 
-               point_size = 2.5)
-
 # coexpression
 
 # 1. calculate spatial correlation scores
@@ -283,48 +273,32 @@ spatCellPlot(starmap_mini,
              point_size = 1.5, cow_n_col = 3)
 
 # HMRF
-hmrf_folder = file.path(tempdir(), '11_HMRF/')
-if(!file.exists(hmrf_folder)) dir.create(hmrf_folder, recursive = TRUE)
-
-# perform hmrf
 my_spatial_genes = km_spatialgenes[1:20]$feats
-HMRF_spatial_genes = doHMRF(
+starmap_mini = runHMRF(
     gobject = starmap_mini,
     expression_values = 'scaled',
-    spatial_genes = my_spatial_genes,
+    feats_to_use = my_spatial_genes,
     spatial_network_name = 'Delaunay_network',
     k = 6,
-    betas = c(10,2,2),
-    output_folder = file.path(hmrf_folder, 'Spatial_genes/SG_top20_k6_scaled')
+    betas = c(10, 12, 14),
+    name = 'HMRF'
 )
 
 # check and select hmrf
-for(i in seq(10, 14, by = 2)) {
-    viewHMRFresults2D(gobject = starmap_mini,
-                      HMRFoutput = HMRF_spatial_genes,
-                      k = 6, 
-                      betas_to_view = i,
-                      point_size = 2)
+for(b in c(10, 12, 14)) {
+    spatPlot2D(gobject = starmap_mini,
+               cell_color = paste0('HMRF_k6_b', b),
+               point_size = 2)
+    spatPlot3D(gobject = starmap_mini,
+               cell_color = paste0('HMRF_k6_b', b),
+               point_size = 2)
 }
-
-for(i in seq(10, 14, by = 2)) {
-    viewHMRFresults3D(gobject = starmap_mini,
-                      HMRFoutput = HMRF_spatial_genes,
-                      k = 6, betas_to_view = i,
-                      point_size = 2)
-}
-
-starmap_mini = addHMRF(gobject = starmap_mini,
-                       HMRFoutput = HMRF_spatial_genes,
-                       k = 6, 
-                       betas_to_add = c(12),
-                       hmrf_name = 'HMRF')
 
 # visualize selected hmrf result
 giotto_colors = getDistinctColors(6)
 names(giotto_colors) = 1:6
 spatPlot(gobject = starmap_mini, 
-         cell_color = 'HMRF_k6_b.12',
+         cell_color = 'HMRF_k6_b12',
          point_size = 3, 
          coord_fix_ratio = 1, 
          cell_color_code = giotto_colors)
