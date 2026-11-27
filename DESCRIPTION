@@ -40,7 +40,7 @@ Suggests:
     terra (>= 1.5-12)
 Remotes:
     giotto-suite/GiottoClass,
-    giotto-suite/GiottoUtils,
+    giotto-suite/GiottoUtils@dev,
     giotto-suite/Giotto,
     giotto-suite/GiottoConnect@dev
 Config/roxygen2/version: 8.0.0
